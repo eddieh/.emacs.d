@@ -1,0 +1,8 @@
+#+TITLE: Eddie is Eddie's (Emacs) directory developed in Emacs
+
+* Introduction
+By default Emacs kinda sucks. Most people customize the hell out of
+Emacs. This is Eddie, my personal configuration of Emacs. Emacs is
+customized by loading a directory containing Emacs Lisp code. That
+directory is =~/.emacs.d= and it contains a an /initialization/ file
+called =init.el=; the file where all the magic begins.

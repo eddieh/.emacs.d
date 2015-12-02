@@ -11,8 +11,9 @@ called =init.el=; the file where all the magic begins.
 # system dictionary that I've been dreaming about for /years/.
 # TODO: build said Emacs mode
 
-This is an experiment in whimsical yet practical literate programming
-and extreme customization. Hopefully it will evolve past experimental.
+This is an experiment in whimsical yet practical literate programming,
+extreme customization, and extreme organization. Hopefully it will
+evolve past experimental.
 
 ** History
 I started using Emacs when I got my hands on my first Linux book. The
@@ -29,3 +30,9 @@ paragraph or so on text editors. It said that an effective Linux
 administrator should use either Emacs or Vi. I picked Emacs because it
 was first in the list and it probably was first because someone
 decided to list the two editors alphabetically.
+
+However, to blatantly copy a line from /Bill & Ted's Excellent
+Adventure/, dedicate yourself to the "proposition which was true in my
+time, just as it's true today," pick either Emacs or Vi—there are no
+other choices. If your craft involves editing text, anything else is a
+mistake.

@@ -36,3 +36,22 @@ Adventure/, dedicate yourself to the "proposition which was true in my
 time, just as it's true today," pick either Emacs or Vi—there are no
 other choices. If your craft involves editing text, anything else is a
 mistake.
+
+* How This Works
+This directory contains my Emacs configuration and
+customization. Think of it like the preferences or settings for other
+applications, but it is in fact much more. It is also extensions,
+plugins, and even the documentation.
+
+When Emacs is launched it tries to load a Lisp file called the
+/initialization file/, in the case the file is
+=~/.emacs.d/init.el=. That file contains just enough Lisp to bootstrap
+my configuration. It does this by reading /this file/ (=README.org=)
+and processing it using Org-babel. This file is both the effective
+entry point for my configuration and its documentation.
+
+** The Initialization File
+The =init.el= file contains the following Lisp code that bootstraps my
+configuration.
+
+#+INCLUDE: "init.el" src emacs-lisp

@@ -6,3 +6,26 @@ Emacs. This is Eddie, my personal configuration of Emacs. Emacs is
 customized by loading a directory containing Emacs Lisp code. That
 directory is =~/.emacs.d= and it contains a an /initialization/ file
 called =init.el=; the file where all the magic begins.
+
+# Already I'm wanting an Emacs mode for interacting with the OS X
+# system dictionary that I've been dreaming about for /years/.
+# TODO: build said Emacs mode
+
+This is an experiment in whimsical yet practical literate programming
+and extreme customization. Hopefully it will evolve past experimental.
+
+** History
+I started using Emacs when I got my hands on my first Linux book. The
+book was called /Linux Administration: A Beginner's Guide/ and it came
+with a Red Hat Linux CD. I got the book used from an alternative
+bookstore in Sacramento, CA. I had a friend that worked there that
+gave me a crazy discount. The CD saved my from having to download
+Linux on my dial-up connection and the book saved me from needing an
+internet connection when I learned my win-modem wouldn't work when
+running Linux.
+
+This was an important event in my life because the book had a
+paragraph or so on text editors. It said that an effective Linux
+administrator should use either Emacs or Vi. I picked Emacs because it
+was first in the list and it probably was first because someone
+decided to list the two editors alphabetically.

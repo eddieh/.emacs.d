@@ -52,6 +52,17 @@ entry point for my configuration and its documentation.
 
 ** The Initialization File
 The =init.el= file contains the following Lisp code that bootstraps my
-configuration.
+configuration. Unfortunately, GitHub doesn't honor org-mode includes.
 
 #+INCLUDE: "init.el" src emacs-lisp
+
+* Configurations
+My configuration is organized into several files loaded bellow. This
+is the only code that /this file/ contains that gets executed by
+Org-babel. It is the /actual/ code thanks to the power of literate
+programming.
+
+#+BEGIN_SRC emacs-lisp
+(message "Loading Eddie's configuration…")
+(eddie/load-file "eddie-core")
+#+END_SRC

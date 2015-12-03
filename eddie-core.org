@@ -1,0 +1,7 @@
+#+TITLE: Eddie's Configuration Core
+
+This file implements core functionality used by everything else.
+
+#+BEGIN_SRC emacs-lisp
+(message "Loading Eddie's configuration core…")
+#+END_SRC

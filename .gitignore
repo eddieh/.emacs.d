@@ -1,2 +1,13 @@
 # why god, why files
 *.DS_Store
+
+# Emacs directories
+auto-save-list
+elpa
+eshell
+
+# generated file
+*.el
+*.elc
+
+

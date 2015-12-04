@@ -65,4 +65,7 @@ programming.
 #+BEGIN_SRC emacs-lisp
 (message "Loading Eddie's configuration…")
 (eddie/load-file "eddie-core")
+(eddie/load-file "eddie-paths")
+(eddie/load-file "eddie-package")
+(eddie/load-file "eddie-theme")
 #+END_SRC

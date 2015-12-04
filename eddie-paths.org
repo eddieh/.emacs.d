@@ -1,0 +1,19 @@
+#+TITLE: Eddie's Configuration Paths
+
+# This file implements core functionality used by everything else.
+
+#+BEGIN_SRC emacs-lisp
+  (message "Loading Eddie's configuration paths…")
+
+  (add-to-list 'load-path "~/.emacs.d/site-lisp")
+  (add-to-list 'load-path "/opt/local/share/emacs/site-lisp")
+
+  (setq exec-path (append exec-path '("/opt/local/bin")))
+  (setq exec-path (append exec-path '("/usr/local/bin")))
+
+  (setenv "PATH"
+          (concat (getenv "PATH")
+                  ":/opt/local/bin"
+                  ":/opt/local/sbin"
+                  ":/Users/eddie/bin"))
+#+END_SRC

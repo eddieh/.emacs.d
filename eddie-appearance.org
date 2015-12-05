@@ -4,6 +4,9 @@ Make stuff look nice.
 
 #+BEGIN_SRC emacs-lisp
 (message "Loading Eddie's configuration appearance…")
+
+;; Kill the splash screen (death to all splash screens)
+(setq inhibit-splash-screen t)
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -44,3 +47,15 @@ Make stuff look nice.
   (setq initial-frame-alist eddie/default-frame-style)
   (setq default-frame-alist eddie/default-frame-style)        
 #+END_SRC
+
+Some cursor related adjustments.
+
+#+begin_src emacs-lisp
+  ;; Show Paren
+  ;; Found this at: http://www.emacsblog.org/
+  (setq show-paren-style 'parenthesis)
+  (show-paren-mode t)
+
+  ;; Stretch cursor on Tabs
+  (setq x-stretch-cursor t)
+#+end_src

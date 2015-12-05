@@ -63,10 +63,11 @@ Org-babel. It is the /actual/ code thanks to the power of literate
 programming.
 
 #+BEGIN_SRC emacs-lisp
-(message "Loading Eddie's configuration…")
-(eddie/load-file "eddie-core")
-(eddie/load-file "eddie-paths")
-(eddie/load-file "eddie-package")
-(eddie/load-file "eddie-theme")
-(eddie/load-file "eddie-appearance")
+  (message "Loading Eddie's configuration…")
+  (eddie/load-file "eddie-core")
+  (eddie/load-file "eddie-paths")
+  (eddie/load-file "eddie-package")
+  (eddie/load-file "eddie-theme")
+  (eddie/load-file "eddie-appearance")
+  (eddie/load-file "eddie-java")
 #+END_SRC

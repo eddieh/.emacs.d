@@ -10,7 +10,8 @@ Ido-mode makes the minibuffer a pleasure, I do, I do.
   ;; ido mode (vertical)
   (use-package ido-vertical-mode
     :config
-    (ido-vertical-mode 1))
+    (ido-vertical-mode 1)
+    (setq ido-vertical-define-keys 'C-n-and-C-p-only))
 
   ;; ido mode
   (setq ido-enable-flex-matching t)

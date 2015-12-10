@@ -70,5 +70,6 @@ programming.
   (eddie/load-file "eddie-theme")
   (eddie/load-file "eddie-appearance")
   (eddie/load-file "eddie-ido")
+  (eddie/load-file "eddie-save")
   (eddie/load-file "eddie-java")
 #+END_SRC

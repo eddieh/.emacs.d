@@ -72,4 +72,5 @@ programming.
   (eddie/load-file "eddie-ido")
   (eddie/load-file "eddie-save")
   (eddie/load-file "eddie-java")
+  (eddie/load-file "eddie-webkit")
 #+END_SRC

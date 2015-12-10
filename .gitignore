@@ -5,6 +5,7 @@
 auto-save-list
 elpa
 eshell
+url
 
 # generated file
 *.el

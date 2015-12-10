@@ -1,0 +1,34 @@
+#+TITLE: Eddie's Configuration I Do, I Do
+
+Ido-mode makes the minibuffer a pleasure, I do, I do.
+
+#+BEGIN_SRC emacs-lisp
+(message "Loading Eddie's configuration ido…")
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  ;; ido mode (vertical)
+  (use-package ido-vertical-mode
+    :config
+    (ido-vertical-mode 1))
+
+  ;; ido mode
+  (setq ido-enable-flex-matching t)
+  (setq ido-everywhere t)
+  (setq ido-default-file-method 'selected-window)
+  (setq ido-default-buffer-method 'selected-window)
+  ; don't look for a match outside of the current directory
+  (setq ido-auto-merge-work-directories-length -1)
+  (ido-mode 1)
+
+  (add-hook 'ido-setup-hook
+   (lambda ()
+     ;; Go straight home
+     (define-key ido-file-completion-map
+       (kbd "~")
+       (lambda ()
+         (interactive)
+         (if (looking-back "/")
+             (insert "~/")
+           (call-interactively 'self-insert-command))))))
+#+END_SRC

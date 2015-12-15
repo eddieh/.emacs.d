@@ -1,0 +1,20 @@
+#+TITLE: Eddie's Configuration ADC3
+
+Style settings for editing ADC3.
+
+#+BEGIN_SRC emacs-lisp
+(message "Loading Eddie's configuration ADC3…")
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (defun adc3-c++-mode ()
+    "C++ mode with adjusted defaults for use with ADC3."
+    (interactive)
+    (c++-mode)
+    (c-set-style "bsd")
+    (setq indent-tabs-mode nil)
+    (setq c-basic-offset 2))
+
+  (setq auto-mode-alist (cons '("/adc3-sdk/.*\\.[ch|cpp]*$" . adc3-c++-mode)
+                              auto-mode-alist))
+#+END_SRC

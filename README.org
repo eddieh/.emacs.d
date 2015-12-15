@@ -73,4 +73,5 @@ programming.
   (eddie/load-file "eddie-save")
   (eddie/load-file "eddie-java")
   (eddie/load-file "eddie-webkit")
+  (eddie/load-file "eddie-adc3")
 #+END_SRC

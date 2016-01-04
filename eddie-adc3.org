@@ -6,6 +6,8 @@ Style settings for editing ADC3.
 (message "Loading Eddie's configuration ADC3…")
 #+END_SRC
 
+Settings for C++ files.
+
 #+BEGIN_SRC emacs-lisp
   (defun adc3-c++-mode ()
     "C++ mode with adjusted defaults for use with ADC3."
@@ -16,5 +18,7 @@ Style settings for editing ADC3.
     (setq c-basic-offset 2))
 
   (setq auto-mode-alist (cons '("/adc3-sdk/.*\\.[ch|cpp]*$" . adc3-c++-mode)
+                              auto-mode-alist))
+  (setq auto-mode-alist (cons '("/adc3-jsc/.*\\.[ch|cpp]*$" . adc3-c++-mode)
                               auto-mode-alist))
 #+END_SRC

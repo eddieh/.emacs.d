@@ -12,9 +12,14 @@ specific preferences are respected.
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'java-mode-hook
-            (lambda ()
-              (setq tab-width 4
-                    c-basic-offset 4
-                    indent-tabs-mode nil)))
+  (setq c-default-style
+        '((java-mode . "bsd")
+          (awk-mode . "awk")
+          (other . "k&r")))
+
+    (add-hook 'java-mode-hook
+              (lambda ()
+                (setq tab-width 4
+                      c-basic-offset 4
+                      indent-tabs-mode nil)))
 #+END_SRC

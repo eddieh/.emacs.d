@@ -61,17 +61,3 @@ My configuration is organized into several files loaded bellow. This
 is the only code that /this file/ contains that gets executed by
 Org-babel. It is the /actual/ code thanks to the power of literate
 programming.
-
-#+BEGIN_SRC emacs-lisp
-  (message "Loading Eddie's configuration…")
-  (eddie/load-file "eddie-core")
-  (eddie/load-file "eddie-paths")
-  (eddie/load-file "eddie-package")
-  (eddie/load-file "eddie-theme")
-  (eddie/load-file "eddie-appearance")
-  (eddie/load-file "eddie-ido")
-  (eddie/load-file "eddie-save")
-  (eddie/load-file "eddie-java")
-  (eddie/load-file "eddie-webkit")
-  (eddie/load-file "eddie-adc3")
-#+END_SRC

@@ -1,5 +1,4 @@
 ;; Eddie's Initialization File
-
 (message "Loading Eddie's initialization…")
 
 
@@ -216,3 +215,10 @@
                             auto-mode-alist))
 (setq auto-mode-alist (cons '("/adc3-jsc/.*\\.[ch|cpp]*$" . adc3-c++-mode)
                             auto-mode-alist))
+
+
+;; Go mode config
+(use-package go-mode)
+
+;; Markdown mode config
+(use-package markdown-mode)

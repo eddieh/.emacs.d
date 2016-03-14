@@ -104,6 +104,12 @@
 ;; Stretch cursor on Tabs
 (setq x-stretch-cursor t)
 
+;; show column mode
+(setq column-number-mode t)
+
+;; prevent mouse wheel scrolling
+(if window-system
+    (mouse-wheel-mode -1))
 
 ;; ido mode config
 (message "Loading Eddie's configuration ido…")

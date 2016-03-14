@@ -153,6 +153,17 @@
 ;; new line at end of file
 (setq require-final-newline t)
 
+;; Column Selection
+; don't change the behavior of  C-z, C-x, C-c, C-v
+(setq cua-enable-cua-keys nil)
+(cua-mode)
+
+;; Org mode
+(setq org-CUA-compatible t)
+(global-set-key "\C-ca" 'org-agenda)
+(global-set-key "\C-cb" 'org-iswitchb)
+(global-set-key "\C-cl" 'org-store-link)
+(setq org-log-done nil)
 
 ;; Java config
 (message "Loading Eddie's configuration for Java…")

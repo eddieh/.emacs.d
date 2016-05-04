@@ -171,6 +171,38 @@
 (global-set-key "\C-cl" 'org-store-link)
 (setq org-log-done nil)
 
+(add-hook 'org-mode-hook
+            (lambda ()
+              (auto-fill-mode)))
+
+(require 'ob-sh)
+(require 'ob-js)
+(require 'ob-python)
+(require 'ob-C)
+(org-babel-do-load-languages 'org-bable-load-languages
+			     '((emacs-lisp . t)
+			       (sh . t)
+			       (C . t)
+			       (cpp . t)
+			       (css . t)
+			       (gnuplot . t)
+			       (haskell . t)
+			       (java . t)
+			       (js . t)
+			       (latex . t)
+			       (lisp . t)
+			       (makefile . t)
+			       (org . t)
+			       (perl . t)
+			       (python . t)
+			       (R . t)
+			       (ruby . t)
+			       (scala . t)
+			       (scheme . t)
+			       (sed . t)
+			       (sql . t)
+			       (sqlite . t)))
+
 ;; Java config
 (message "Loading Eddie's configuration for Java…")
 

@@ -203,6 +203,7 @@
 			       (sql . t)
 			       (sqlite . t)))
 
+
 ;; Java config
 (message "Loading Eddie's configuration for Java…")
 
@@ -211,12 +212,18 @@
         (awk-mode . "awk")
         (other . "k&r")))
 
-  (add-hook 'java-mode-hook
-            (lambda ()
-              (setq tab-width 4
-                    c-basic-offset 4
-                    indent-tabs-mode nil)))
+(add-hook 'java-mode-hook
+	  (lambda ()
+	    (setq tab-width 4
+		  c-basic-offset 4
+		  indent-tabs-mode nil)))
 
+;; C config
+(message "Loading Eddie's configuration C…")
+
+(setq c-basic-offset 4
+      tab-width 4
+      indent-tabs-mode nil)
 
 ;; WebKit config
 (message "Loading Eddie's configuration WebKit…")
@@ -271,3 +278,9 @@
 
 ;; Markdown mode config
 (use-package markdown-mode)
+
+;; Emacs Lisp (Elisp)
+(add-hook 'emacs-lisp-mode-hook
+          (lambda ()
+            (setq indent-tabs-mode t)
+            (setq tab-width 8)))

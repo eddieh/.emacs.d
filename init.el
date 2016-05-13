@@ -111,6 +111,10 @@
 (if window-system
     (mouse-wheel-mode -1))
 
+;; Show directory names
+(require 'uniquify nil 'noerror)
+(setq uniquify-buffer-name-style 'forward)
+
 ;; ido mode config
 (message "Loading Eddie's configuration ido…")
 
@@ -284,3 +288,23 @@
           (lambda ()
             (setq indent-tabs-mode t)
             (setq tab-width 8)))
+
+;; eshell
+(setq eshell-prompt-function
+      (lambda ()
+	; # for root, $ for a regular user
+	(if (= (user-uid) 0) "# " "$ ")))
+(setq eshell-prompt-regexp "^[^#$\n]*[#$] ")
+(defalias 'f 'find-file)
+(defalias 'o 'find-file-other-window)
+(defalias 'd 'dired)
+(defalias 'l 'dired-other-window)
+
+;; Don't display the default banner message. The
+;; ~/.emacs.d/eshell/login file has been customized to show a message.
+(setq eshell-banner-message "")
+
+; suppress the follow warning
+;   ls does not support --dired; see `dired-use-ls-dired' for more details.
+(setq ls-lisp-use-insert-directory-program nil)
+(require 'ls-lisp)

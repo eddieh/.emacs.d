@@ -352,3 +352,5 @@
 ;;      ---------  word
 ;; --------------  symbol
 ;; forward-word, backward-word, forward-symbol, backword-symbol
+;; These already exist, but I want them to work on snake_case,
+;; camelCase, PascalCase, and kebab-case, etc

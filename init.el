@@ -170,6 +170,7 @@
 
 ;; Org mode
 (setq org-CUA-compatible t)
+(setq org-use-extra-keys t)
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cb" 'org-iswitchb)
 (global-set-key "\C-cl" 'org-store-link)
@@ -308,3 +309,46 @@
 ;   ls does not support --dired; see `dired-use-ls-dired' for more details.
 (setq ls-lisp-use-insert-directory-program nil)
 (require 'ls-lisp)
+
+
+;;; Stuff for speaking on OS X.
+(defun speak (str)
+  "Speak the string."
+  (shell-command (concat "say " (shell-quote-argument str))))
+
+(defun speak-word ()
+  "Speak the current word at point."
+  (interactive)
+  (speak (thing-at-point 'word)))
+
+(defun speak-line ()
+  "Speak the current line at point."
+  (interactive)
+  (speak (thing-at-point 'line)))
+
+(defun speak-sentence ()
+  "Speak the current sentence at point."
+  (interactive)
+  (speak (thing-at-point 'sentence)))
+
+(defun speak-paragraph ()
+  "Speak the current paragraph at point."
+  (interactive)
+  (speak (thing-at-point 'paragraph)))
+
+(defun speak-buffer ()
+  "Speak the entire buffer."
+  (interactive)
+  (speak (buffer-string)))
+
+(defun speak-region ()
+  "Speak region."
+  (interactive)
+  (speak (buffer-substring (region-beginning) (region-end))))
+
+;; Need to implement
+;; some-procedure
+;; ----            word
+;;      ---------  word
+;; --------------  symbol
+;; forward-word, backward-word, forward-symbol, backword-symbol

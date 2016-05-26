@@ -11,10 +11,6 @@ called =init.el=; the file where all the magic begins.
 # system dictionary that I've been dreaming about for /years/.
 # TODO: build said Emacs mode
 
-This is an experiment in whimsical yet practical literate programming,
-extreme customization, and extreme organization. Hopefully it will
-evolve past experimental.
-
 ** History
 I started using Emacs when I got my hands on my first Linux book. The
 book was called /Linux Administration: A Beginner's Guide/ and it came
@@ -41,23 +37,9 @@ mistake.
 This directory contains my Emacs configuration and
 customization. Think of it like the preferences or settings for other
 applications, but it is in fact much more. It is also extensions,
-plugins, and even the documentation.
+plugins, and custom functionality.
 
+* The Initialization File
 When Emacs is launched it tries to load a Lisp file called the
 /initialization file/, in the case the file is
-=~/.emacs.d/init.el=. That file contains just enough Lisp to bootstrap
-my configuration. It does this by reading /this file/ (=README.org=)
-and processing it using Org-babel. This file is both the effective
-entry point for my configuration and its documentation.
-
-** The Initialization File
-The =init.el= file contains the following Lisp code that bootstraps my
-configuration. Unfortunately, GitHub doesn't honor org-mode includes.
-
-#+INCLUDE: "init.el" src emacs-lisp
-
-* Configurations
-My configuration is organized into several files loaded bellow. This
-is the only code that /this file/ contains that gets executed by
-Org-babel. It is the /actual/ code thanks to the power of literate
-programming.
+=~/.emacs.d/init.el=.

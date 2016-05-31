@@ -1,0 +1,154 @@
+#content {
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 2em;
+    padding-right: 2em;
+}
+
+/* author information, including email */
+p.author {
+}
+
+/* publishing date */
+p.date {
+}
+
+/* creator info, about org mode version */
+p.creator {
+}
+
+/* document title */
+.title {
+}
+
+/* document subtitle */
+.subtitle {
+}
+
+/* TODO keywords, all not-done states */
+.todo {
+}
+
+/* the DONE keywords, all states that count as done */
+.done {
+}
+
+/* each TODO keyword also uses a class named after itself */
+.WAITING {
+}
+
+/* timestamp */
+.timestamp {
+}
+
+/* keyword associated with a timestamp, like SCHEDULED */
+.timestamp-kwd {
+}
+
+/* span around keyword plus timestamp */
+.timestamp-wrapper {
+}
+
+/* tag in a headline */
+.tag {
+}
+
+/* each tag uses itself as a class, "@" replaced by "_" */
+._HOME {
+}
+
+/* target for links */
+.target {
+}
+
+/* the line number in a code example */
+.linenr {
+}
+
+/* for highlighting referenced code lines */
+.code-highlighted {
+}
+
+/* div for outline level N (headline plus text)) */
+div.outline-N {
+}
+
+/* extra div for text at outline level N */
+div.outline-text-N {
+}
+
+/* section number in headlines, different for each level */
+.section-number-N {
+}
+
+/* label like "Figure 1:" */
+.figure-number {
+}
+
+/* label like "Table 1:" */
+.table-number {
+}
+
+table {
+    width: 100%;
+    box-sizing: border-box;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+th, td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #E1E1E1;
+}
+
+th.left, td.left {
+    text-align: left;
+}
+
+th.right, td.right {
+    text-align: right;
+}
+
+/* label like "Listing 1:" */
+.listing-number {
+}
+
+/* how to format an inlined image */
+div.figure {
+}
+
+/* formatted source code */
+pre.src {
+}
+
+/* normal example */
+pre.example {
+}
+
+/* verse paragraph */
+p.verse {
+}
+
+/* footnote section headline */
+div.footnotes {
+}
+
+/* footnote definition paragraph, containing a footnote */
+p.footnote {
+}
+
+/* a footnote reference number (always a <sup>) */
+.footref {
+}
+
+/* footnote number in footnote definition (always <sup>) */
+.footnum {
+}
+
+#postamble {
+    font-size: .85em;
+    border-top: 1px solid #eee;
+    margin-top: 3.5em;
+    padding: 2em;
+    background: #fbfbfb;
+}

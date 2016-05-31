@@ -17,6 +17,12 @@
                 ":/opt/local/sbin"
                 ":/Users/eddie/bin"))
 
+(defun string-from-file (path)
+  "Get the content of the file at PATH as a string"
+  (with-temp-buffer
+    (insert-file-contents path)
+    (buffer-string)))
+
 
 ;; Package config
 (message "Loading Eddie's configuration package…")
@@ -175,6 +181,14 @@
 (global-set-key "\C-cb" 'org-iswitchb)
 (global-set-key "\C-cl" 'org-store-link)
 (setq org-log-done nil)
+
+(setq org-html-doctype "html5")
+(setq org-html-head-include-default-style nil)
+(setq org-html-head
+      (concat "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+<link href=\"https://cdnjs.cloudflare.com/ajax/libs/normalize/4.1.1/normalize.css\" rel=\"stylesheet\">
+<style>" (string-from-file "style.css") "</style"))
+(setq org-html-head-include-scripts nil)
 
 (add-hook 'org-mode-hook
             (lambda ()

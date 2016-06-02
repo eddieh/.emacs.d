@@ -1,6 +1,8 @@
 ;; Eddie's Initialization File
 (message "Loading Eddie's initialization…")
 
+(defconst eddie/default-emacs-dir "~/.emacs.d/"
+  "My default emacs director.")
 
 ;; Path config
 (message "Loading Eddie's configuration paths…")
@@ -53,10 +55,10 @@
 (message "Loading Eddie's configuration theme…")
 
 (use-package zenburn-theme
-             :init
-             (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-             :config
-             (load-theme 'zenburn t))
+  :init
+  (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+  :config
+  (load-theme 'zenburn t))
 
 
 ;; Appearance config
@@ -140,15 +142,15 @@
 (ido-mode 1)
 
 (add-hook 'ido-setup-hook
- (lambda ()
-   ;; Go straight home
-   (define-key ido-file-completion-map
-     (kbd "~")
-     (lambda ()
-       (interactive)
-       (if (looking-back "/")
-           (insert "~/")
-         (call-interactively 'self-insert-command))))))
+	  (lambda ()
+	    ;; Go straight home
+	    (define-key ido-file-completion-map
+	      (kbd "~")
+	      (lambda ()
+		(interactive)
+		(if (looking-back "/")
+		    (insert "~/")
+		  (call-interactively 'self-insert-command))))))
 
 
 ;; Save config
@@ -187,40 +189,48 @@
 (setq org-html-head
       (concat "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
 <link href=\"https://cdnjs.cloudflare.com/ajax/libs/normalize/4.1.1/normalize.css\" rel=\"stylesheet\">
-<style>" (string-from-file "style.css") "</style"))
+<style>" (string-from-file (concat eddie/default-emacs-dir "style.css")) "</style"))
 (setq org-html-head-include-scripts nil)
+
+(setq org-default-notes-file "~/CloudStation/notes.org")
+(global-set-key "\C-cc" 'org-capture)
+(setq org-capture-templates
+      '(("t" "Todo" entry (file+headline "~/CloudStation/plan/inbox.org" "Tasks")
+	 "* TODO %?\n %i\n %a")))
 
 (add-hook 'org-mode-hook
             (lambda ()
               (auto-fill-mode)))
 
+;; Org babel
 (require 'ob-sh)
 (require 'ob-js)
 (require 'ob-python)
 (require 'ob-C)
-(org-babel-do-load-languages 'org-bable-load-languages
-			     '((emacs-lisp . t)
-			       (sh . t)
-			       (C . t)
-			       (cpp . t)
-			       (css . t)
-			       (gnuplot . t)
-			       (haskell . t)
-			       (java . t)
-			       (js . t)
-			       (latex . t)
-			       (lisp . t)
-			       (makefile . t)
-			       (org . t)
-			       (perl . t)
-			       (python . t)
-			       (R . t)
-			       (ruby . t)
-			       (scala . t)
-			       (scheme . t)
-			       (sed . t)
-			       (sql . t)
-			       (sqlite . t)))
+(org-babel-do-load-languages
+ 'org-bable-load-languages
+ '((emacs-lisp . t)
+   (sh . t)
+   (C . t)
+   (cpp . t)
+   (css . t)
+   (gnuplot . t)
+   (haskell . t)
+   (java . t)
+   (js . t)
+   (latex . t)
+   (lisp . t)
+   (makefile . t)
+   (org . t)
+   (perl . t)
+   (python . t)
+   (R . t)
+   (ruby . t)
+   (scala . t)
+   (scheme . t)
+   (sed . t)
+   (sql . t)
+   (sqlite . t)))
 
 
 ;; Java config
@@ -326,6 +336,7 @@
 
 
 ;;; Stuff for speaking on OS X.
+;; TODO: should use async-shell-command?
 (defun speak (str)
   "Speak the string."
   (shell-command (concat "say " (shell-quote-argument str))))
@@ -360,7 +371,6 @@
   (interactive)
   (speak (buffer-substring (region-beginning) (region-end))))
 
-;; Need to implement
 ;; some-procedure
 ;; ----            word
 ;;      ---------  word
@@ -368,3 +378,139 @@
 ;; forward-word, backward-word, forward-symbol, backword-symbol
 ;; These already exist, but I want them to work on snake_case,
 ;; camelCase, PascalCase, and kebab-case, etc
+
+;; NSString
+;; --       word
+;;   ------ word
+;; -------- symbol
+
+;; applicationWillTerminate
+;; -----------              word
+;;            ----          word
+;;                --------- word
+;; ------------------------ symbol
+
+;; test area:
+;; serpent_case kebab-case camelCase PascalCase NSString GtkWindow
+
+(global-subword-mode)
+
+(defun eddie/forward-symbol (&optional arg)
+  ""
+  (interactive "^p")
+  (let ((subword-mode-was-on
+	 (if (and (boundp 'subword-mode) subword-mode) 1 -1))
+	(superword-mode-was-on
+	 (if (and (boundp 'superword-mode) superword-mode) 1 -1)))
+    (superword-mode 1)
+    (subword-forward arg)
+    (subword-mode subword-mode-was-on)
+    (superword-mode superword-mode-was-on)))
+
+(defun eddie/backward-symbol (&optional arg)
+  ""
+  (interactive "^p")
+  (let ((subword-mode-was-on
+	 (if (and (boundp 'subword-mode) subword-mode) 1 -1))
+	(superword-mode-was-on
+	 (if (and (boundp 'superword-mode) superword-mode) 1 -1)))
+    (superword-mode 1)
+    (subword-backward arg)
+    (subword-mode subword-mode-was-on)
+    (superword-mode superword-mode-was-on)))
+
+(defun eddie/mark-symbol (arg)
+  ""
+  (interactive "p")
+  (let ((subword-mode-was-on
+	 (if (and (boundp 'subword-mode) subword-mode) 1 -1))
+	(superword-mode-was-on
+	 (if (and (boundp 'superword-mode) superword-mode) 1 -1)))
+    (superword-mode 1)
+    (subword-mark arg)
+    (subword-mode subword-mode-was-on)
+    (superword-mode superword-mode-was-on)))
+
+(defun eddie/kill-symbol (arg)
+  ""
+  (interactive "p")
+  (let ((subword-mode-was-on
+	 (if (and (boundp 'subword-mode) subword-mode) 1 -1))
+	(superword-mode-was-on
+	 (if (and (boundp 'superword-mode) superword-mode) 1 -1)))
+    (superword-mode 1)
+    (subword-kill arg)
+    (subword-mode subword-mode-was-on)
+    (superword-mode superword-mode-was-on)))
+
+(defun eddie/backward-kill-symbol (arg)
+  ""
+  (interactive "p")
+  (let ((subword-mode-was-on
+	 (if (and (boundp 'subword-mode) subword-mode) 1 -1))
+	(superword-mode-was-on
+	 (if (and (boundp 'superword-mode) superword-mode) 1 -1)))
+    (superword-mode 1)
+    (subword-backward-kill arg)
+    (subword-mode subword-mode-was-on)
+    (superword-mode superword-mode-was-on)))
+
+(defun eddie/transpose-symbols (arg)
+  ""
+  (interactive "*p")
+  (let ((subword-mode-was-on
+	 (if (and (boundp 'subword-mode) subword-mode) 1 -1))
+	(superword-mode-was-on
+	 (if (and (boundp 'superword-mode) superword-mode) 1 -1)))
+    (superword-mode 1)
+    (subword-transpose arg)
+    (subword-mode subword-mode-was-on)
+    (superword-mode superword-mode-was-on)))
+
+(defun eddie/capitalize-symbol (arg)
+  ""
+  (interactive "p")
+  (let ((subword-mode-was-on
+	 (if (and (boundp 'subword-mode) subword-mode) 1 -1))
+	(superword-mode-was-on
+	 (if (and (boundp 'superword-mode) superword-mode) 1 -1)))
+    (superword-mode 1)
+    (subword-capitalize arg)
+    (subword-mode subword-mode-was-on)
+    (superword-mode superword-mode-was-on)))
+
+(defun eddie/upcase-symbol (arg)
+  ""
+  (interactive "p")
+  (let ((subword-mode-was-on
+	 (if (and (boundp 'subword-mode) subword-mode) 1 -1))
+	(superword-mode-was-on
+	 (if (and (boundp 'superword-mode) superword-mode) 1 -1)))
+    (superword-mode 1)
+    (subword-upcase arg)
+    (subword-mode subword-mode-was-on)
+    (superword-mode superword-mode-was-on)))
+
+(defun eddie/downcase-symbol (arg)
+  ""
+  (interactive "p")
+  (let ((subword-mode-was-on
+	 (if (and (boundp 'subword-mode) subword-mode) 1 -1))
+	(superword-mode-was-on
+	 (if (and (boundp 'superword-mode) superword-mode) 1 -1)))
+    (superword-mode 1)
+    (subword-downcase arg)
+    (subword-mode subword-mode-was-on)
+    (superword-mode superword-mode-was-on)))
+
+(setq mac-command-modifier 'super)
+
+(global-set-key (kbd "s-f") 'eddie/forward-symbol)
+(global-set-key (kbd "s-b") 'eddie/backward-symbol)
+(global-set-key (kbd "s-@") 'eddie/mark-symbol)
+(global-set-key (kbd "s-d") 'eddie/kill-symbol)
+(global-set-key (kbd "s-<backspace>") 'eddie/backward-kill-symbol)
+(global-set-key (kbd "s-t") 'eddie/transpose-symbols)
+(global-set-key (kbd "s-c") 'eddie/capitalize-symbol)
+(global-set-key (kbd "s-u") 'eddie/upcase-symbol)
+(global-set-key (kbd "s-l") 'eddie/downcase-symbol)

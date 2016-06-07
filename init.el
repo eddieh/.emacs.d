@@ -336,10 +336,11 @@
 
 
 ;;; Stuff for speaking on OS X.
-;; TODO: should use async-shell-command?
 (defun speak (str)
   "Speak the string."
-  (shell-command (concat "say " (shell-quote-argument str))))
+  (with-temp-buffer
+    (call-process-shell-command
+     (concat "say " (shell-quote-argument str)) nil t nil)))
 
 (defun speak-word ()
   "Speak the current word at point."
@@ -514,3 +515,8 @@
 (global-set-key (kbd "s-c") 'eddie/capitalize-symbol)
 (global-set-key (kbd "s-u") 'eddie/upcase-symbol)
 (global-set-key (kbd "s-l") 'eddie/downcase-symbol)
+
+
+;; Already I'm wanting an Emacs mode for interacting with the OS X
+;; system dictionary that I've been dreaming about for /years/.
+;; TODO: build said Emacs mode

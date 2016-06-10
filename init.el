@@ -254,6 +254,13 @@
       tab-width 4
       indent-tabs-mode nil)
 
+(add-hook 'c-mode-common-hook
+	  (lambda ()
+	    (setq c-basic-offset 4
+		  tab-width 4
+		  indent-tabs-mode nil)))
+
+
 ;; WebKit config
 (message "Loading Eddie's configuration WebKit…")
 
@@ -516,7 +523,62 @@
 (global-set-key (kbd "s-u") 'eddie/upcase-symbol)
 (global-set-key (kbd "s-l") 'eddie/downcase-symbol)
 
+;; Define word at point
+;; definitions are structured as follows:
+;; <definition> := <heading>
+;; 	        { <entry> }
+;;              <derivatives>
+;;		<phrases>
+;;		<origin> ;
 
-;; Already I'm wanting an Emacs mode for interacting with the OS X
-;; system dictionary that I've been dreaming about for /years/.
-;; TODO: build said Emacs mode
+;; <heading> := <word> [ "|"<phonetic>"|" ] ;
+;; <entry> := "▶"<part-of-speech> <def-string> ;
+;; <part-of-speech> := <part> [ "[" <part-extra> "]" ] ;
+
+;; <part> := "noun"
+;; 	| "pronoun"
+;; 	| "adjective"
+;; 	| "determiner"
+;; 	| "verb"
+;; 	| "adverb"
+;; 	| "preposition"
+;; 	| "conjunction"
+;; 	| "interjection"
+;; 	| ? etc ? ;
+
+;; <part-extra> := ! this ends up being ambiguous !
+
+;; <word> := ? latin alphabet string ? ;
+;; <phonetic> := ? IPA string ? ;
+
+;; The above EBNF breaks down and will not work do to ambiguity.
+;; We'll be better served to use the _private_ OS X API and get
+;; definition as HTML.
+
+(defun define-word--format-definition ()
+  "Formats a buffer containing a definition from the Dictionary
+command."
+  (beginning-of-buffer)
+  (while (re-search-forward "▶" nil t)
+    (replace-match "\n\n▶")
+    (fill-paragraph))
+  (beginning-of-buffer)
+  (while (re-search-forward "•" nil t)
+    (replace-match "\n•")
+    (fill-paragraph))
+  (while (re-search-forward "ORIGIN" nil t)
+    (replace-match (concat "\n\n" (propertize "ORIGIN" 'face 'italic)))))
+
+(defun define-word--internal (word)
+  "Puts the definition for WORD in a temporary buffer."
+  (with-temp-buffer-window
+   "*Definition*" nil nil
+   (with-current-buffer standard-output
+     (call-process-shell-command
+      (concat "Dictionary " (shell-quote-argument word)) nil t nil)
+     (define-word--format-definition))))
+
+(defun define-word ()
+  "Display the definition of word at point."
+  (interactive)
+  (define-word--internal (thing-at-point 'word)))

@@ -638,3 +638,5 @@ command."
   "Display the definition of word at point."
   (interactive)
   (define-word--internal (thing-at-point 'word)))
+
+(global-set-key (kbd "M-#") 'define-word)

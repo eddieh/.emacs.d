@@ -526,6 +526,8 @@
 
 ;;; Define word at point
 
+(require 'shr)
+
 (defcustom def-width fill-column
   "Frame width to use for rendering.
 May either be an integer specifying a fixed width in characters,

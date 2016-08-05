@@ -32,11 +32,13 @@
 (require 'package)
 (package-initialize)
 (add-to-list 'package-archives
+	     '("melpa-stable" . "http://melpa-stable.milkbox.net/packages/") t)
+(add-to-list 'package-archives
              '("elpa" . "http://tromey.com/elpa/"))
-(add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/"))
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.org/packages/"))
+;; (add-to-list 'package-archives
+;;              '("marmalade" . "http://marmalade-repo.org/packages/"))
+;; (add-to-list 'package-archives
+;;              '("melpa" . "http://melpa.org/packages/"))
 
 ;; install use-package if necessary
 (unless (package-installed-p 'use-package)
@@ -233,6 +235,10 @@
    (sqlite . t)))
 
 
+;; default indent style
+(setq tab-width 4)
+(setq-default indent-tabs-mode nil)
+
 ;; Java config
 (message "Loading Eddie's configuration for Java…")
 
@@ -314,6 +320,12 @@
 
 ;; Markdown mode config
 (use-package markdown-mode)
+
+;; Groovy mode config
+(use-package groovy-mode)
+
+;; Gradle mode config
+(use-package gradle-mode)
 
 ;; Emacs Lisp (Elisp)
 (add-hook 'emacs-lisp-mode-hook

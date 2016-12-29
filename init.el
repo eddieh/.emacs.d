@@ -85,6 +85,9 @@
 (if window-system
     (tool-bar-mode -1))
 
+;; Enable emoji
+(set-fontset-font t 'unicode "Apple Color Emoji" nil 'prepend)
+
 ; Set the font
 ;; (set-frame-font "DejaVu Sans Mono 15")
 ;; (set-default-font (if (eq system-type 'windows-nt)
@@ -127,6 +130,8 @@
 
 ;; ido mode config
 (message "Loading Eddie's configuration ido…")
+
+(use-package project-explorer)
 
 ;; ido mode (vertical)
 (use-package ido-vertical-mode
@@ -315,6 +320,17 @@
                             auto-mode-alist))
 
 
+;; ADC JavaScript
+(add-hook 'js-mode-hook
+	  (lambda ()
+	    (let ((filename (buffer-file-name)))
+	      (when (and filename
+			 (string-match "adc3-sdk" filename))
+		(message "ADC js-mode engage!")
+		(setq tab-width 2
+		      js-indent-level 2
+		      indent-tabs-mode nil)))))
+
 ;; Go mode config
 (use-package go-mode)
 
@@ -326,6 +342,12 @@
 
 ;; Gradle mode config
 (use-package gradle-mode)
+
+;; CMake mode config
+(use-package cmake-mode)
+
+;; gitignroe mode config
+(use-package gitignore-mode)
 
 ;; Emacs Lisp (Elisp)
 (add-hook 'emacs-lisp-mode-hook

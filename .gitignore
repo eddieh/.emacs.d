@@ -8,7 +8,4 @@ eshell
 url
 
 # generated file
-*.el
 *.elc
-
-

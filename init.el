@@ -25,6 +25,9 @@
     (insert-file-contents path)
     (buffer-string)))
 
+;; keep customization in a separate file
+(setq custom-file "~/.emacs.d/custome.el")
+(load custom-file 'noerror)
 
 ;; Package config
 (message "Loading Eddie's configuration package…")
@@ -375,6 +378,16 @@
 (setq ls-lisp-use-insert-directory-program nil)
 (require 'ls-lisp)
 
+(require 'dired-x)
+(setq-default dired-omit-files-p t)
+(setq dired-omit-files
+      (concat
+       dired-omit-files ; default omits '.', '..', auto-save files and lock files
+       "\\|^\\.DS_Store$"		  ; macOS noise
+       "\\|^\\.SynologyWorkingDirectory$" ; CloudStation noise
+       "\\|^Icon$"))			  ; CloudStation noise (wish
+					  ; there was a way to omit
+				          ; it as 'parent/Icon')
 
 ;;; Stuff for speaking on OS X.
 (defun speak (str)

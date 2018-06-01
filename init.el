@@ -31,7 +31,7 @@
     (buffer-string)))
 
 ;; keep customization in a separate file
-(setq custom-file "~/.emacs.d/custome.el")
+(setq custom-file "~/.emacs.d/custom.el")
 (load custom-file 'noerror)
 
 ;; Package config

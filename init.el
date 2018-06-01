@@ -17,7 +17,12 @@
         (concat (getenv "PATH")
                 ":/opt/local/bin"
                 ":/opt/local/sbin"
+		":/usr/local/bin"
                 ":/Users/eddie/bin"))
+
+;(setenv "DICTIONARY" "en_US")
+(setq ispell-program-name "hunspell")
+(setq ispell-really-hunspell t)
 
 (defun string-from-file (path)
   "Get the content of the file at PATH as a string"
@@ -89,7 +94,8 @@
     (tool-bar-mode -1))
 
 ;; Enable emoji
-(set-fontset-font t 'unicode "Apple Color Emoji" nil 'prepend)
+(if window-system
+    (set-fontset-font t 'unicode "Apple Color Emoji" nil 'prepend))
 
 ; Set the font
 ;; (set-frame-font "DejaVu Sans Mono 15")
@@ -111,6 +117,9 @@
 
 (setq initial-frame-alist eddie/default-frame-style)
 (setq default-frame-alist eddie/default-frame-style)
+
+;; (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+;; (add-to-list 'default-frame-alist '(ns-appearance . dark))
 
 ;; Show Paren
 ;; Found this at: http://www.emacsblog.org/
@@ -213,7 +222,7 @@
               (auto-fill-mode)))
 
 ;; Org babel
-(require 'ob-sh)
+;; (require 'ob-sh)
 (require 'ob-js)
 (require 'ob-python)
 (require 'ob-C)
@@ -334,6 +343,11 @@
 		      js-indent-level 2
 		      indent-tabs-mode nil)))))
 
+;; ActionScript
+(add-to-list 'auto-mode-alist '("\\.as\\'" . actionscript-mode))
+
+(add-to-list 'auto-mode-alist '("\\.mm\\'" . objc-mode))
+
 ;; Go mode config
 (use-package go-mode)
 
@@ -378,16 +392,16 @@
 (setq ls-lisp-use-insert-directory-program nil)
 (require 'ls-lisp)
 
-(require 'dired-x)
-(setq-default dired-omit-files-p t)
-(setq dired-omit-files
-      (concat
-       dired-omit-files ; default omits '.', '..', auto-save files and lock files
-       "\\|^\\.DS_Store$"		  ; macOS noise
-       "\\|^\\.SynologyWorkingDirectory$" ; CloudStation noise
-       "\\|^Icon$"))			  ; CloudStation noise (wish
-					  ; there was a way to omit
-				          ; it as 'parent/Icon')
+;; (require 'dired-x)
+;; (setq-default dired-omit-files-p t)
+;; (setq dired-omit-files
+;;       (concat
+;;        dired-omit-files ; default omits '.', '..', auto-save files and lock files
+;;        "\\|^\\.DS_Store$"		  ; macOS noise
+;;        "\\|^\\.SynologyWorkingDirectory$" ; CloudStation noise
+;;        "\\|^Icon$"))			  ; CloudStation noise (wish
+;; 					  ; there was a way to omit
+;; 				          ; it as 'parent/Icon')
 
 ;;; Stuff for speaking on OS X.
 (defun speak (str)

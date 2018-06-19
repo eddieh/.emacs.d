@@ -369,6 +369,11 @@
 ;; gitignroe mode config
 (use-package gitignore-mode)
 
+(use-package editorconfig
+  :ensure t
+  :config
+  (editorconfig-mode 1))
+
 ;; Emacs Lisp (Elisp)
 (add-hook 'emacs-lisp-mode-hook
           (lambda ()

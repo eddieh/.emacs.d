@@ -343,6 +343,9 @@
 		      js-indent-level 2
 		      indent-tabs-mode nil)))))
 
+;; JS Modules
+(add-to-list 'auto-mode-alist '("\\.mjs\\'" . js-mode))
+
 ;; ActionScript
 (add-to-list 'auto-mode-alist '("\\.as\\'" . actionscript-mode))
 

@@ -288,17 +288,16 @@
 (message "Loading Eddie's configuration WebKit…")
 
 ;; https://chromium.googlesource.com/chromium/src/+/master/docs/emacs.md
-(use-package google-c-style
-  :config
-  (c-add-style "Google" google-c-style)
-  (c-add-style "WebKit" '("Google"
-                          (c-basic-offset . 4)
-                          (c-offsets-alist . ((innamespace . 0)
-                                              (access-label . -)
-                                              (case-label . 0)
-                                              (member-init-intro . +)
-                                              (topmost-intro . 0)
-                                              (arglist-cont-nonempty . +))))))
+(require 'google-c-style)
+(c-add-style "Google" google-c-style)
+(c-add-style "WebKit" '("Google"
+                        (c-basic-offset . 4)
+                        (c-offsets-alist . ((innamespace . 0)
+                                            (access-label . -)
+                                            (case-label . 0)
+                                            (member-init-intro . +)
+                                            (topmost-intro . 0)
+                                            (arglist-cont-nonempty . +)))))
 
 ;; https://bugs.webkit.org/show_bug.cgi?id=72483
 (defun webkit-c++-mode ()

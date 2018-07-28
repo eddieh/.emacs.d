@@ -342,6 +342,9 @@
 		      js-indent-level 2
 		      indent-tabs-mode nil)))))
 
+;; JS Modules
+(add-to-list 'auto-mode-alist '("\\.mjs\\'" . js-mode))
+
 ;; ActionScript
 (add-to-list 'auto-mode-alist '("\\.as\\'" . actionscript-mode))
 
@@ -364,6 +367,11 @@
 
 ;; gitignroe mode config
 (use-package gitignore-mode)
+
+(use-package editorconfig
+  :ensure t
+  :config
+  (editorconfig-mode 1))
 
 ;; Emacs Lisp (Elisp)
 (add-hook 'emacs-lisp-mode-hook

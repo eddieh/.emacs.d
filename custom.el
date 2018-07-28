@@ -5,7 +5,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (zenburn-theme use-package project-explorer markdown-mode ido-vertical-mode groovy-mode gradle-mode google-c-style go-mode gitignore-mode cmake-mode))))
+    (editorconfig zenburn-theme use-package project-explorer markdown-mode ido-vertical-mode groovy-mode gradle-mode google-c-style go-mode gitignore-mode cmake-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

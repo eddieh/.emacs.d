@@ -38,7 +38,7 @@
 (message "Loading Eddie's configuration package…")
 
 (require 'package)
-(package-initialize)
+;; (setq package-enable-at-startup nil)
 (add-to-list 'package-archives
 	     '("melpa-stable" . "http://melpa-stable.milkbox.net/packages/") t)
 (add-to-list 'package-archives
@@ -47,9 +47,11 @@
 ;;              '("marmalade" . "http://marmalade-repo.org/packages/"))
 ;; (add-to-list 'package-archives
 ;;              '("melpa" . "http://melpa.org/packages/"))
+(package-initialize)
 
 ;; install use-package if necessary
 (unless (package-installed-p 'use-package)
+  (package-refresh-contents)
   (package-install 'use-package))
 
 (require 'use-package)
@@ -372,6 +374,14 @@
   :ensure t
   :config
   (editorconfig-mode 1))
+
+;; Projectile
+(use-package projectile
+  :ensure t
+  :init
+  (setq projectile-require-project-root nil)
+  :config
+  (projectile-mode 1))
 
 ;; Emacs Lisp (Elisp)
 (add-hook 'emacs-lisp-mode-hook

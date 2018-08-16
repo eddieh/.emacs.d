@@ -97,7 +97,9 @@
 
 ;; Enable emoji
 (if window-system
-    (set-fontset-font t 'unicode "Apple Color Emoji" nil 'prepend))
+    (set-fontset-font "fontset-default" 'unicode "Apple Color Emoji" nil 'prepend))
+
+(add-hook 'after-init-hook #'global-emojify-mode)
 
 ; Set the font
 ;; (set-frame-font "DejaVu Sans Mono 15")

@@ -62,9 +62,18 @@ h5:hover::before {
     border-bottom: 1px solid hsl(0, 0%, 90.6%);
 }
 
-pre {
+code, pre {
     font-family: "DejaVu Sans Mono", Menlo, Monaco, "Adale Mono", monospace;
-    font-size: 100%;
+    font-size: 85%;
+}
+
+code {
+    display: inline-block;
+    background-color: rgb(230, 240, 248);
+    outline-color: rgb(230, 230, 230);
+    outline-style: solid;
+    outline-width: 1px;
+    padding: 2px;
 }
 
 pre.src {

@@ -2,19 +2,6 @@
     background-color: hsl(0, 0%, 97%);
     font-family: STIXGeneral, Palation, Georgia, "Times New Roman", serif;
     font-size: 120%;
-
-    /* hsl(203.6, 100%, 12%);*/
-
-    /* width: 100vw; */
-    /* max-width: 100%; */
-    /* overflow-x: hidden; */
-    /* box-sizing: border-box; */
-    /* padding: 3rem 0 0; */
-
-    /* margin-left: auto; */
-    /* margin-right: auto; */
-    /* padding-left: 2em; */
-    /* padding-right: 2em; */
 }
 
 #content > div {
@@ -22,14 +9,41 @@
     margin: 0 auto;
 }
 
-h1 {
-    min-height: 1rem;
-    font-size: 2.5rem;
+h1, h2, h3, h4, h5 {
+    margin: 24px 0 12px;
 }
+
+
+h1 { font-size: 2.5rem; }
 h2 { font-size: 2rem; }
 h3 { font-size: 1.75rem; }
 h4 { font-size: 1.5rem; }
 h5 { font-size: 1rem; }
+
+h1::before,
+h2::before,
+h3::before,
+h4::before,
+h5::before {
+    content: "§";
+    position: relative;
+    display: list-item;
+    left: -1em;
+    top: .95em;
+    /* Safari bug: must have width or the header content isn't
+       selectable. */
+    width: 0;
+    list-style: none;
+    color: hsl(0, 0%, 90%);
+}
+
+h1:hover::before,
+h2:hover::before,
+h3:hover::before,
+h4:hover::before,
+h5:hover::before {
+    color: hsl(0, 0%, 50%);
+}
 
 #content h1,
 #content p,

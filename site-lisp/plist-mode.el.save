@@ -56,27 +56,6 @@
 (defvar plist-indentation 4 "Amount to indent nested items in plist mode.")
 (defvar plist-mode-hook nil "Hooks to run on entry to plist mode.")
 
-(defun plist-mode ()
-  "Major mode for editing plist files as used by OpenStep and its
-descendants (Rhapsody, MacOS X, etc.).
-
-A plist consists of one toplevel item. Items are strings, arrays, and
-dictionaries. A string is a sequence of characters between
-double-quotes. A string containing no special characters need not be
-quoted. An array consists of a number of items, separated by commas,
-surrounded by parentheses. A dictionary is delimited by curly braces
-and has entries of the form STRING = ITEM ;.
-
-The following keys are active in plist-mode:
-\\{plist-mode-map}"
-  (interactive)
-  (kill-all-local-variables)
-  (use-local-map plist-mode-map)
-  (set-syntax-table plist-mode-syntax-table)
-  (setq mode-name "Plist")
-  (setq major-mode 'plist-mode)
-  (run-hooks 'plist-mode-hook))
-
 (defun calculate-plist-indent ()
   (save-excursion
     (beginning-of-line)
@@ -103,3 +82,28 @@ The following keys are active in plist-mode:
       (indent-to level)
       ;; ???
 )))
+
+;;;###autoload
+(define-derived-mode plist-mode prog-mode "plist"
+  "Major mode for editing plist files as used by OpenStep and its
+descendants (Rhapsody, MacOS X, etc.).
+
+A plist consists of one toplevel item. Items are strings, arrays, and
+dictionaries. A string is a sequence of characters between
+double-quotes. A string containing no special characters need not be
+quoted. An array consists of a number of items, separated by commas,
+surrounded by parentheses. A dictionary is delimited by curly braces
+and has entries of the form STRING = ITEM ;.
+
+The following keys are active in plist-mode:
+\\{plist-mode-map}"
+  (interactive)
+  (kill-all-local-variables)
+  (use-local-map plist-mode-map)
+  (set-syntax-table plist-mode-syntax-table)
+  (setq mode-name "plist")
+  (setq major-mode 'plist-mode)
+  (run-hooks 'plist-mode-hook))
+
+
+(provide 'plist-mode)

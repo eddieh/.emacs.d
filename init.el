@@ -1,34 +1,99 @@
 ;; Eddie's Initialization File
 (message "Loading Eddie's initialization…")
 
-(defconst eddie/default-emacs-dir "~/.emacs.d/"
-  "My default emacs director.")
+;; Moving all the appearance stuff to the top
+
+;; Appearance config
+(message "Loading Eddie's configuration appearance…")
+
+;; Kill the splash screen (death to all splash screens)
+(setq inhibit-splash-screen t)
+
+; Never use the menu in a terminal
+(unless window-system
+  (menu-bar-mode -1))
+
+; Don't display the fringe
+(if window-system
+    (fringe-mode 0))
+
+; Don't display the scroll-bar
+(if window-system
+    (scroll-bar-mode -1))
+
+; Don't display the pointless toolbar
+(if window-system
+    (tool-bar-mode -1))
+
+;; Enable emoji
+(if window-system
+    (set-fontset-font "fontset-default" 'unicode "Apple Color Emoji" nil 'prepend))
+
+;(add-hook 'after-init-hook #'global-emojify-mode)
+
+; Set the font
+;; (set-frame-font "DejaVu Sans Mono 15")
+;; (set-default-font (if (eq system-type 'windows-nt)
+;;                       "DejaVu Sans Mono 11"
+;;                     "DejaVu Sans Mono 15"))
+
+(setq eddie/default-frame-style
+      `((vertical-scroll-bars)
+        (right-fringe . 0)
+        (left-fringe . 0)
+        (font . ,(if (eq system-type 'windows-nt)
+                     "DejaVu Sans Mono 11"
+                   "DejaVu Sans Mono 15"))
+        ;; (menu-bar-lines . 0) ;; causes the menu-bar in MacOS X to
+        ;; disappear
+        (tool-bar-lines . 0)
+        (width . 80)))
+
+(setq initial-frame-alist eddie/default-frame-style)
+(setq default-frame-alist eddie/default-frame-style)
+
+;; (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+;; (add-to-list 'default-frame-alist '(ns-appearance . dark))
+
 
 ;; Path config
 (message "Loading Eddie's configuration paths…")
 
+(defconst eddie/default-emacs-dir "~/.emacs.d/"
+  "My default emacs director.")
+
+(add-to-list 'load-path "~/site-lisp/plist-mode")
 (add-to-list 'load-path "~/.emacs.d/site-lisp")
 (add-to-list 'load-path "/opt/local/share/emacs/site-lisp")
 
+(setq exec-path (append exec-path '("/Library/TeX/texbin")))
 (setq exec-path (append exec-path '("/opt/local/bin")))
 (setq exec-path (append exec-path '("/usr/local/bin")))
 
 (setenv "PATH"
         (concat (getenv "PATH")
+		":/Library/TeX/texbin"
                 ":/opt/local/bin"
                 ":/opt/local/sbin"
 		":/usr/local/bin"
                 ":/Users/eddie/bin"))
 
 ;(setenv "DICTIONARY" "en_US")
-(setq ispell-program-name "hunspell")
-(setq ispell-really-hunspell t)
+;; (setq ispell-program-name "hunspell")
+;; (setq ispell-really-hunspell t)
+(setq ispell-program-name "aspell")
 
 (defun string-from-file (path)
   "Get the content of the file at PATH as a string"
   (with-temp-buffer
     (insert-file-contents path)
     (buffer-string)))
+
+(defun eddie/html-style-tag-with-file (file)
+  (concat
+   "<style>"
+   (string-from-file (concat eddie/default-emacs-dir file))
+   "</style>"))
 
 ;; keep customization in a separate file
 (setq custom-file "~/.emacs.d/custom.el")
@@ -40,9 +105,11 @@
 (require 'package)
 ;; (setq package-enable-at-startup nil)
 (add-to-list 'package-archives
-	     '("melpa-stable" . "http://melpa-stable.milkbox.net/packages/") t)
+             '("melpa-stable" . "http://stable.melpa.org/packages/") t)
 (add-to-list 'package-archives
              '("elpa" . "http://tromey.com/elpa/"))
+;; (add-to-list 'package-archives
+;; 	     '("melpa-stable" . "http://melpa-stable.milkbox.net/packages/") t)
 ;; (add-to-list 'package-archives
 ;;              '("marmalade" . "http://marmalade-repo.org/packages/"))
 ;; (add-to-list 'package-archives
@@ -71,59 +138,6 @@
   (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
   :config
   (load-theme 'zenburn t))
-
-
-;; Appearance config
-(message "Loading Eddie's configuration appearance…")
-
-;; Kill the splash screen (death to all splash screens)
-(setq inhibit-splash-screen t)
-
-; Never use the menu in a terminal
-(unless window-system
-  (menu-bar-mode -1))
-
-; Don't display the fringe
-(if window-system
-    (fringe-mode 0))
-
-; Don't display the scroll-bar
-(if window-system
-    (scroll-bar-mode -1))
-
-; Don't display the pointless toolbar
-(if window-system
-    (tool-bar-mode -1))
-
-;; Enable emoji
-(if window-system
-    (set-fontset-font "fontset-default" 'unicode "Apple Color Emoji" nil 'prepend))
-
-(add-hook 'after-init-hook #'global-emojify-mode)
-
-; Set the font
-;; (set-frame-font "DejaVu Sans Mono 15")
-;; (set-default-font (if (eq system-type 'windows-nt)
-;;                       "DejaVu Sans Mono 11"
-;;                     "DejaVu Sans Mono 15"))
-
-(setq eddie/default-frame-style
-      `((vertical-scroll-bars)
-        (right-fringe . 0)
-        (left-fringe . 0)
-        (font . ,(if (eq system-type 'windows-nt)
-                     "DejaVu Sans Mono 11"
-                   "DejaVu Sans Mono 15"))
-        ;; (menu-bar-lines . 0) ;; causes the menu-bar in MacOS X to
-        ;; disappear
-        (tool-bar-lines . 0)
-        (width . 80)))
-
-(setq initial-frame-alist eddie/default-frame-style)
-(setq default-frame-alist eddie/default-frame-style)
-
-;; (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-;; (add-to-list 'default-frame-alist '(ns-appearance . dark))
 
 ;; Show Paren
 ;; Found this at: http://www.emacsblog.org/
@@ -199,7 +213,7 @@
 (setq cua-enable-cua-keys nil)
 (cua-mode)
 
-;; Org mode
+;;; Org mode
 (setq org-CUA-compatible t)
 (setq org-use-extra-keys t)
 (global-set-key "\C-ca" 'org-agenda)
@@ -207,23 +221,30 @@
 (global-set-key "\C-cl" 'org-store-link)
 (setq org-log-done nil)
 
+;; org html export
 (setq org-html-doctype "html5")
 (setq org-html-head-include-default-style nil)
 (setq org-html-head
-      (concat "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
-<link href=\"https://cdnjs.cloudflare.com/ajax/libs/normalize/4.1.1/normalize.css\" rel=\"stylesheet\">
-<style>" (string-from-file (concat eddie/default-emacs-dir "style.css")) "</style"))
+      (concat
+       (eddie/html-style-tag-with-file "css/reset.css")
+       (eddie/html-style-tag-with-file "css/style.css")))
 (setq org-html-head-include-scripts nil)
+(setq org-html-preamble t)
+(setq org-html-preamble-format
+      '(("en"
+	 "<h1 class=\"title\">%t</h1>
+<p class=\"date\">%d</p>
+<p class=\"author\">by %a</p>")))
+(setq org-html-htmlize-output-type nil)
 
+;; org notes & capture
 (setq org-default-notes-file "~/CloudStation/notes.org")
 (global-set-key "\C-cc" 'org-capture)
 (setq org-capture-templates
       '(("t" "Todo" entry (file+headline "~/CloudStation/plan/inbox.org" "Tasks")
 	 "* TODO %?\n %i\n %a")))
 
-(add-hook 'org-mode-hook
-            (lambda ()
-              (auto-fill-mode)))
+(add-hook 'org-mode-hook (lambda () (auto-fill-mode)))
 
 ;; Org babel
 ;; (require 'ob-sh)
@@ -423,49 +444,51 @@
 ;; 				          ; it as 'parent/Icon')
 
 ;; Language Server Protocol (LSP) mode
-(use-package lsp-mode
-  :ensure t
-  :config
+;; (use-package lsp-mode
+;;   :ensure t
+;;   :config
 
-  ;; make sure we have lsp-imenu everywhere we have LSP
-  (require 'lsp-imenu)
-  (add-hook 'lsp-after-open-hook 'lsp-enable-imenu)
-  ;; get lsp-python-enable defined
-  ;; NB: use either projectile-project-root or ffip-get-project-root-directory
-  ;;     or any other function that can be used to find the root directory of a project
-  (lsp-define-stdio-client lsp-python "python"
-                           #'projectile-project-root
-                           '("pyls"))
+;;   ;; make sure we have lsp-imenu everywhere we have LSP
+;;   (require 'lsp-imenu)
+;;   (add-hook 'lsp-after-open-hook 'lsp-enable-imenu)
+;;   ;; get lsp-python-enable defined
+;;   ;; NB: use either projectile-project-root or ffip-get-project-root-directory
+;;   ;;     or any other function that can be used to find the root directory of a project
+;;   (lsp-define-stdio-client lsp-python "python"
+;;                            #'projectile-project-root
+;;                            '("pyls"))
 
-  ;; make sure this is activated when python-mode is activated
-  ;; lsp-python-enable is created by macro above
-  (add-hook 'python-mode-hook
-            (lambda ()
-              (lsp-python-enable)))
+;;   ;; make sure this is activated when python-mode is activated
+;;   ;; lsp-python-enable is created by macro above
+;;   (add-hook 'python-mode-hook
+;;             (lambda ()
+;;               (lsp-python-enable)))
 
-  ;; lsp extras
-  ;; (use-package lsp-ui
-  ;;   :ensure t
-  ;;   :config
-  ;;   (setq lsp-ui-sideline-ignore-duplicate t)
-  ;;   (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+;;   ;; lsp extras
+;;   ;; (use-package lsp-ui
+;;   ;;   :ensure t
+;;   ;;   :config
+;;   ;;   (setq lsp-ui-sideline-ignore-duplicate t)
+;;   ;;   (add-hook 'lsp-mode-hook 'lsp-ui-mode))
 
-  (use-package company-lsp
-    :config
-    (push 'company-lsp company-backends))
+;;   (use-package company-lsp
+;;     :config
+;;     (push 'company-lsp company-backends))
 
-  ;; NB: only required if you prefer flake8 instead of the default
-  ;; send pyls config via lsp-after-initialize-hook -- harmless for
-  ;; other servers due to pyls key, but would prefer only sending this
-  ;; when pyls gets initialised (:initialize function in
-  ;; lsp-define-stdio-client is invoked too early (before server
-  ;; start)) -- cpbotha
-  (defun lsp-set-cfg ()
-    (let ((lsp-cfg `(:pyls (:configurationSources ("flake8")))))
-      ;; TODO: check lsp--cur-workspace here to decide per server / project
-      (lsp--set-configuration lsp-cfg)))
+;;   ;; NB: only required if you prefer flake8 instead of the default
+;;   ;; send pyls config via lsp-after-initialize-hook -- harmless for
+;;   ;; other servers due to pyls key, but would prefer only sending this
+;;   ;; when pyls gets initialised (:initialize function in
+;;   ;; lsp-define-stdio-client is invoked too early (before server
+;;   ;; start)) -- cpbotha
+;;   (defun lsp-set-cfg ()
+;;     (let ((lsp-cfg `(:pyls (:configurationSources ("flake8")))))
+;;       ;; TODO: check lsp--cur-workspace here to decide per server / project
+;;       (lsp--set-configuration lsp-cfg)))
 
-  (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg))
+;;   (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg))
+
+(use-package magit)
 
 ;;; Stuff for speaking on OS X.
 (defun speak (str)
@@ -767,3 +790,23 @@ command."
   (define-word--internal (thing-at-point 'word)))
 
 (global-set-key (kbd "M-#") 'define-word)
+
+ ;;; Stefan Monnier <foo at acm.org>. It is the opposite of fill-paragraph
+(defun unfill-paragraph (&optional region)
+  "Takes a multi-line paragraph and makes it into a single line of text."
+  (interactive (progn (barf-if-buffer-read-only) '(t)))
+  (let ((fill-column (point-max))
+        ;; This would override `fill-column' if it's an integer.
+        (emacs-lisp-docstring-fill-column t))
+    (fill-paragraph nil region)))
+
+;; Handy key definition
+(define-key global-map "\M-Q" 'unfill-paragraph)
+
+(require 'plist-mode)
+
+;; exec-path-from-shel
+;; Emacs library to ensure environment variables inside Emacs look the
+;; same as in the user's shell.
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))

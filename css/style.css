@@ -1,8 +1,61 @@
 #content {
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 2em;
-    padding-right: 2em;
+    background-color: hsl(0, 0%, 97%);
+    font-family: STIXGeneral, Palation, Georgia, "Times New Roman", serif;
+    font-size: 120%;
+
+    /* hsl(203.6, 100%, 12%);*/
+
+    /* width: 100vw; */
+    /* max-width: 100%; */
+    /* overflow-x: hidden; */
+    /* box-sizing: border-box; */
+    /* padding: 3rem 0 0; */
+
+    /* margin-left: auto; */
+    /* margin-right: auto; */
+    /* padding-left: 2em; */
+    /* padding-right: 2em; */
+}
+
+#content > div {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+h1 {
+    min-height: 1rem;
+    font-size: 2.5rem;
+}
+h2 { font-size: 2rem; }
+h3 { font-size: 1.75rem; }
+h4 { font-size: 1.5rem; }
+h5 { font-size: 1rem; }
+
+#content h1,
+#content p,
+#content .org-src-container {
+    margin-bottom: .75rem;
+}
+
+.org-src-container {
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    transform: translate(-50%);
+    padding: 3rem 0;
+    background-color: hsl(0, 0%, 95%);
+    border-top: 1px solid hsl(0, 0%, 90.6%);
+    border-bottom: 1px solid hsl(0, 0%, 90.6%);
+}
+
+pre {
+    font-family: "DejaVu Sans Mono", Menlo, Monaco, "Adale Mono", monospace;
+    font-size: 100%;
+}
+
+pre.src {
+    max-width: 700px;
+    margin: 0 auto;
 }
 
 /* author information, including email */

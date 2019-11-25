@@ -2,11 +2,14 @@
 *.DS_Store
 
 # Emacs directories
-auto-save-list
-elpa
-eshell
-url
+/auto-save-list
+/elpa
+/eshell
+/url
 
 # generated file
 *.elc
 ido.last
+projectile-bookmarks.eld
+
+/var

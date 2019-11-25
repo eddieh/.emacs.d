@@ -1,3 +1,7 @@
+body {
+    line-height: 1.5;
+}
+
 #content {
     background-color: hsl(0, 0%, 97%);
     font-family: STIXGeneral, Palation, Georgia, "Times New Roman", serif;
@@ -29,7 +33,7 @@ h5::before {
     position: relative;
     display: list-item;
     left: -1em;
-    top: .95em;
+    top: 1.4em;
     /* Safari bug: must have width or the header content isn't
        selectable. */
     width: 0;
@@ -69,11 +73,8 @@ code, pre {
 
 code {
     display: inline-block;
-    background-color: rgb(230, 240, 248);
-    outline-color: rgb(230, 230, 230);
-    outline-style: solid;
-    outline-width: 1px;
-    padding: 2px;
+    background-color: hsl(0, 0%, 90%);
+    padding: 0 4pt;
 }
 
 pre.src {

@@ -488,7 +488,9 @@
 
 ;;   (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg))
 
-(use-package magit)
+(use-package magit
+  :init
+  (global-set-key (kbd "C-c m") 'magit))
 
 ;;; Stuff for speaking on OS X.
 (defun speak (str)

@@ -229,7 +229,7 @@
        (eddie/html-style-tag-with-file "css/reset.css")
        (eddie/html-style-tag-with-file "css/style.css")))
 (setq org-html-head-include-scripts nil)
-(setq org-html-preamble t)
+(setq org-html-preamble nil)
 (setq org-html-preamble-format
       '(("en"
 	 "<h1 class=\"title\">%t</h1>

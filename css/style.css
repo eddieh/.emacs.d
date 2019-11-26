@@ -55,6 +55,21 @@ h5:hover::before {
     margin-bottom: .75rem;
 }
 
+.title {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+h1.title::before {
+    content: "⧉";
+    left: -1.3em;
+}
+
+#table-of-contents h2::before {
+    content: "#";
+    top: 1.5em;
+}
+
 .org-src-container {
     position: relative;
     width: 100vw;

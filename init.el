@@ -794,7 +794,7 @@ command."
 
 (global-set-key (kbd "M-#") 'define-word)
 
- ;;; Stefan Monnier <foo at acm.org>. It is the opposite of fill-paragraph
+;;; Stefan Monnier <foo at acm.org>. It is the opposite of fill-paragraph
 (defun unfill-paragraph (&optional region)
   "Takes a multi-line paragraph and makes it into a single line of text."
   (interactive (progn (barf-if-buffer-read-only) '(t)))
@@ -827,3 +827,7 @@ command."
 		(lambda ()
 		  (interactive)
 		  (find-file "~/.profile")))
+
+;; No need for copy & paste
+(global-set-key (kbd "C-c f") 'find-file-at-point)
+(global-set-key (kbd "C-c w") 'browse-url-at-point)

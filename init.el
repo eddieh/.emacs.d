@@ -404,7 +404,8 @@
   :init
   (setq projectile-require-project-root nil)
   :config
-  (projectile-mode 1))
+  (projectile-mode +1)
+  (define-key projectile-mode-map (kbd "C-c C-p") 'projectile-command-map))
 
 ;; Emacs Lisp (Elisp)
 (add-hook 'emacs-lisp-mode-hook
@@ -812,3 +813,17 @@ command."
 ;; same as in the user's shell.
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
+
+;;; Frequent files
+
+;; Open Emacs init file
+(global-set-key (kbd "C-c i")
+		(lambda ()
+		  (interactive)
+		  (find-file "~/.emacs.d/init.el")))
+
+;; Open .profile file
+(global-set-key (kbd "C-c p")
+		(lambda ()
+		  (interactive)
+		  (find-file "~/.profile")))

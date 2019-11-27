@@ -2,6 +2,11 @@ body {
     line-height: 1.5;
 }
 
+a:link { color: #394C90; }
+a:visited { color: #7A7DB0; }
+a:link, a:visited { text-decoration: none; }
+a:hover { text-decoration: underline; }
+
 #content {
     background-color: hsl(0, 0%, 97%);
     font-family: STIXGeneral, Palation, Georgia, "Times New Roman", serif;

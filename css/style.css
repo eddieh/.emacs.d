@@ -17,7 +17,6 @@ h1, h2, h3, h4, h5 {
     margin: 24px 0 12px;
 }
 
-
 h1 { font-size: 2.5rem; }
 h2 { font-size: 2rem; }
 h3 { font-size: 1.75rem; }
@@ -69,6 +68,9 @@ h1.title::before {
     content: "#";
     top: 1.5em;
 }
+
+/* list of list hierarchy indention */
+li > ul, li > ol { padding-left: 1.25em }
 
 .org-src-container {
     position: relative;

@@ -270,3 +270,9 @@ p.footnote {
     max-width: 700px;
     margin: 0 auto;
 }
+
+#postamble::after {
+    content: "∃";
+    text-align: center;
+    display: block;
+}

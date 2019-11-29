@@ -235,6 +235,11 @@
 	 "<h1 class=\"title\">%t</h1>
 <p class=\"date\">%d</p>
 <p class=\"author\">by %a</p>")))
+(setq org-html-postamble t)
+(setq org-html-postamble-format
+      '(("en" "<p class=\"author\">Author: %a</p>
+<p class=\"date\">Date: %d</p>
+<p class=\"modified\">Modified: %C</p>")))
 (setq org-html-htmlize-output-type nil)
 
 ;; org notes & capture

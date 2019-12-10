@@ -433,6 +433,8 @@
 ;; ~/.emacs.d/eshell/login file has been customized to show a message.
 (setq eshell-banner-message "")
 
+(global-set-key (kbd "C-c e") 'eshell)
+
 ; suppress the follow warning
 ;   ls does not support --dired; see `dired-use-ls-dired' for more details.
 (setq ls-lisp-use-insert-directory-program nil)

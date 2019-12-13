@@ -814,6 +814,8 @@ command."
 (define-key global-map "\M-Q" 'unfill-paragraph)
 
 (require 'plist-mode)
+(add-to-list 'auto-mode-alist '("\\.pbfilespec$" . plist-mode))
+(add-to-list 'auto-mode-alist '("\\.pbcompspec$" . plist-mode))
 
 ;; exec-path-from-shel
 ;; Emacs library to ensure environment variables inside Emacs look the

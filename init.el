@@ -256,6 +256,7 @@
 (require 'ob-js)
 (require 'ob-python)
 (require 'ob-C)
+(require 'ob-shell)
 (org-babel-do-load-languages
  'org-bable-load-languages
  '((emacs-lisp . t)
@@ -816,6 +817,7 @@ command."
 (require 'plist-mode)
 (add-to-list 'auto-mode-alist '("\\.pbfilespec$" . plist-mode))
 (add-to-list 'auto-mode-alist '("\\.pbcompspec$" . plist-mode))
+(add-to-list 'auto-mode-alist '("\\.xcspec$" . plist-mode))
 
 ;; exec-path-from-shel
 ;; Emacs library to ensure environment variables inside Emacs look the

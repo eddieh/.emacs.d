@@ -103,6 +103,7 @@ code {
 pre.src {
     max-width: 700px;
     margin: 0 auto;
+    overflow-x: scroll;
 }
 
 /* author information, including email */

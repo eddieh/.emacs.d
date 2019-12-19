@@ -842,3 +842,27 @@ command."
 ;; No need for copy & paste
 (global-set-key (kbd "C-c f") 'find-file-at-point)
 (global-set-key (kbd "C-c w") 'browse-url-at-point)
+
+
+;;; Calc
+
+(setq math-additional-units
+      '((bit   nil	      "Bit")	 (B   "8 * bit"	   "Byte")
+
+	;; SI prefix
+	(kbit  "1000 * bit"   "Kilobit") (kB  "1000 * B"   "Kilobyte")
+	(Mbit  "1000 * kbit"  "Megabit") (MB  "1000 * kB"  "Megabyte")
+	(Gbit  "1000 * Mbit"  "Gigabit") (GB  "1000 * MB"  "Gigabyte")
+	(Tbit  "1000 * Gbit"  "Terabit") (TB  "1000 * GB"  "Terabyte")
+
+	;; ISO/IEC 80000
+	(Kibit "1024 * bit"   "Kibibit") (KiB "1024 * B"   "Kibibyte")
+	(Mibit "1024 * Kibit" "Mebibit") (MiB "1024 * KiB" "Mebibyte")
+	(Gibit "1024 * Mibit" "Gibibit") (GiB "1024 * MiB" "Gibibyte")
+	(Tibit "1024 * Gibit" "Tebibit") (TiB "1024 * GiB" "Tebibyte")
+
+	;; lazy programmer notation
+	(b "B" "Byte") ;; (byte "B" "Byte") (Byte "B" "Byte")
+	(kb "KiB" "Kibibyte") (mb "MiB" "Mebibyte")
+	(gb "GiB" "Gibibyte") (tb "TiB" "Tebibyte"))
+      math-units-table nil)

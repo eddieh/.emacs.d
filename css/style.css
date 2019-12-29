@@ -106,6 +106,10 @@ pre.src {
     overflow-x: scroll;
 }
 
+/* emphasis, bold */
+i, em { font-style: italic; }
+b, strong { font-weight: bold; }
+
 /* author information, including email */
 p.author {
 }

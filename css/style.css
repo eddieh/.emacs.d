@@ -110,6 +110,15 @@ pre.src {
 i, em { font-style: italic; }
 b, strong { font-weight: bold; }
 
+q, blockquote {
+    padding-left: 3em;
+    padding-right: 1em;
+    font-size: 90%;
+    line-height: 1.2em;
+    color: hsl(0, 0%, 32%);
+    border-left: gray 5px solid;
+}
+
 /* author information, including email */
 p.author {
 }

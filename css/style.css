@@ -79,6 +79,12 @@ h1.title::before {
 li > ul, li > ol { padding-left: 1.25em }
 
 .org-src-container {
+    padding: 2rem 1em;
+    background-color: hsl(0, 0%, 95%);
+    border: 1px solid hsl(0, 0%, 90.6%);
+}
+
+.org-fullwidth-src-container {
     position: relative;
     width: 100vw;
     left: 50%;

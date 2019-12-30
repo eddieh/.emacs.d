@@ -866,3 +866,16 @@ command."
 	(kb "KiB" "Kibibyte") (mb "MiB" "Mebibyte")
 	(gb "GiB" "Gibibyte") (tb "TiB" "Tebibyte"))
       math-units-table nil)
+
+
+;;; smgl-mode, html-mode, etc
+
+;; Don't underline HTML title or headings h1-h6
+(require 'sgml-mode)
+(add-to-list 'html-tag-face-alist '("title" bold))
+(add-to-list 'html-tag-face-alist '("h1" bold))
+(add-to-list 'html-tag-face-alist '("h2" bold-italic))
+(add-to-list 'html-tag-face-alist '("h3" italic))
+(add-to-list 'html-tag-face-alist '("h4" . default))
+(add-to-list 'html-tag-face-alist '("h5" . default))
+(add-to-list 'html-tag-face-alist '("h6" . default))

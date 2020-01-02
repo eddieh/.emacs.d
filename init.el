@@ -419,12 +419,15 @@
             (setq indent-tabs-mode t)
             (setq tab-width 8)))
 
-;; eshell
+;;; eshell
+
+;; display a normal UNIX prompt
 (setq eshell-prompt-function
       (lambda ()
 	; # for root, $ for a regular user
 	(if (= (user-uid) 0) "# " "$ ")))
 (setq eshell-prompt-regexp "^[^#$\n]*[#$] ")
+
 (defalias 'f 'find-file)
 (defalias 'o 'find-file-other-window)
 (defalias 'd 'dired)
@@ -434,7 +437,22 @@
 ;; ~/.emacs.d/eshell/login file has been customized to show a message.
 (setq eshell-banner-message "")
 
+;; quick access
 (global-set-key (kbd "C-c e") 'eshell)
+
+;; match key bindings for Terminal.app
+;;   jump to previous mark ⌘↑
+;;   jump to next mark ⌘↓
+;;   clear to start ⌘K (clear scrollback & clear screen)
+(add-hook 'eshell-mode-hook
+	  (lambda ()
+	    (local-set-key (kbd "<s-up>") 'eshell-previous-prompt)
+	    (local-set-key (kbd "<s-down>") 'eshell-next-prompt)
+	    (local-set-key (kbd "s-k") (lambda ()
+					 (interactive)
+					 (eshell/clear t)
+					 (eshell-reset)))))
+
 
 ; suppress the follow warning
 ;   ls does not support --dired; see `dired-use-ls-dired' for more details.

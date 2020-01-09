@@ -253,6 +253,7 @@
 
 ;; Org babel
 ;; (require 'ob-sh)
+(require 'ob-ditaa)
 (require 'ob-js)
 (require 'ob-python)
 (require 'ob-C)
@@ -264,6 +265,7 @@
    (C . t)
    (cpp . t)
    (css . t)
+   (ditaa . t)
    (gnuplot . t)
    (haskell . t)
    (java . t)
@@ -282,6 +284,7 @@
    (sql . t)
    (sqlite . t)))
 
+(setq org-ditaa-jar-path "/usr/local/Cellar/ditaa/0.11.0/libexec/ditaa-0.11.0-standalone.jar")
 
 ;; default indent style
 (setq tab-width 4)

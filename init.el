@@ -286,6 +286,10 @@
 
 (setq org-ditaa-jar-path "/usr/local/Cellar/ditaa/0.11.0/libexec/ditaa-0.11.0-standalone.jar")
 
+(use-package ox-hugo
+  :ensure t
+  :after ox)
+
 ;; default indent style
 (setq tab-width 4)
 (setq-default indent-tabs-mode nil)

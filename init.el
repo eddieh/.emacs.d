@@ -214,6 +214,9 @@
 (cua-mode)
 
 ;;; Org mode
+
+(require 'org-tempo)
+
 (setq org-CUA-compatible t)
 (setq org-use-extra-keys t)
 (global-set-key "\C-ca" 'org-agenda)

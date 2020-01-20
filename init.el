@@ -907,3 +907,26 @@ command."
 (add-to-list 'html-tag-face-alist '("h4" . default))
 (add-to-list 'html-tag-face-alist '("h5" . default))
 (add-to-list 'html-tag-face-alist '("h6" . default))
+
+
+;;; Date helpers
+
+;; ISO 8601 date or 'merican style with prefix argument
+(defun eddie/insert-date (arg)
+  (interactive "P")
+  (insert (format-time-string (if arg "%D" "%F"))))
+
+(defun eddie/insert-time ()
+   (interactive)
+   (insert (format-time-string "%-l:%M %p")))
+
+(defun eddie/insert-datetime ()
+  (interactive)
+  (insert (format-time-string "%F %-l:%M %p")))
+
+;; Full ISO 8601 formatted timestamp (2020-01-19T17:01:54-0800)
+(defun eddie/insert-timestamp ()
+  (interactive)
+  (insert (format-time-string "%FT%T%z")))
+
+(global-set-key (kbd "C-c d") 'eddie/insert-date)

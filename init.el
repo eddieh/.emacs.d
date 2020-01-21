@@ -492,6 +492,44 @@
 ;; 					  ; there was a way to omit
 ;; 				          ; it as 'parent/Icon')
 
+;;; Magit
+
+(use-package magit
+  :init
+  (global-set-key (kbd "C-c m") 'magit))
+
+(defun eddie/magit-status-bufferp ()
+  (string= "magit-status-mode" major-mode))
+
+;;; Company mode
+
+  ;; use tab to indent or complete
+  (defun tab-indent-or-complete ()
+    (interactive)
+    (if (minibufferp)
+	(minibuffer-complete)
+      (if (eddie/magit-status-bufferp)
+	  (magit-section-toggle (magit-current-section))
+	(if (looking-at "\\_>")
+	    (company-complete-common)
+	  (indent-for-tab-command)))))
+
+(use-package company
+  :ensure t
+  :config
+
+  ;; turn off auto-complete
+  (setq company-idle-delay nil)
+  (global-set-key (kbd "<tab>") 'tab-indent-or-complete)
+
+  :bind (:map company-active-map
+	      ("C-p" . company-select-previous)
+	      ("C-n" . company-select-next)))
+
+;; magit-mode-map
+
+(add-hook 'after-init-hook 'global-company-mode)
+
 ;; Language Server Protocol (LSP) mode
 ;; (use-package lsp-mode
 ;;   :ensure t
@@ -536,10 +574,6 @@
 ;;       (lsp--set-configuration lsp-cfg)))
 
 ;;   (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg))
-
-(use-package magit
-  :init
-  (global-set-key (kbd "C-c m") 'magit))
 
 ;;; Stuff for speaking on OS X.
 (defun speak (str)

@@ -252,6 +252,18 @@
       '(("t" "Todo" entry (file+headline "~/CloudStation/plan/inbox.org" "Tasks")
 	 "* TODO %?\n %i\n %a")))
 
+(add-to-list 'org-structure-template-alist '("el" . "src elisp"))
+(add-to-list 'org-structure-template-alist '("sh" . "src sh"))
+; org-tempo-keywords-alist
+
+(define-skeleton eddie/org-doc-info
+  "Insert common document info comments."
+  "Title: "
+"#+TITLE: " str \n
+"#+DATE: " (format-time-string "%F") \n
+"#+STARTUP: showall" \n "" \n "" \n)
+(define-abbrev org-mode-abbrev-table "di" "" 'eddie/org-doc-info)
+
 (add-hook 'org-mode-hook (lambda () (auto-fill-mode)))
 
 ;; Org babel

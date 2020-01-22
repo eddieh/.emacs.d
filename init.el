@@ -298,6 +298,7 @@
    (sed . t)
    (sql . t)
    (sqlite . t)))
+(setq org-confirm-babel-evaluate nil)
 
 (setq org-ditaa-jar-path "/usr/local/Cellar/ditaa/0.11.0/libexec/ditaa-0.11.0-standalone.jar")
 

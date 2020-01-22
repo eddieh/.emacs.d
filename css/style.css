@@ -56,7 +56,8 @@ h5:hover::before {
 
 #content h1,
 #content p,
-#content .org-src-container {
+#content .org-src-container,
+#content .example {
     margin-bottom: .75rem;
 }
 
@@ -78,7 +79,7 @@ h1.title::before {
 /* list of list hierarchy indention */
 li > ul, li > ol { padding-left: 1.25em }
 
-.org-src-container {
+.org-src-container, .example {
     padding: 2rem 1em;
     background-color: hsl(0, 0%, 95%);
     border: 1px solid hsl(0, 0%, 90.6%);

@@ -225,25 +225,71 @@
 (setq org-log-done nil)
 
 ;; org html export
-(setq org-html-doctype "html5")
-(setq org-html-head-include-default-style nil)
-(setq org-html-head
-      (concat
-       (eddie/html-style-tag-with-file "css/reset.css")
-       (eddie/html-style-tag-with-file "css/style.css")))
-(setq org-html-head-include-scripts nil)
-(setq org-html-preamble nil)
-(setq org-html-preamble-format
-      '(("en"
-	 "<h1 class=\"title\">%t</h1>
-<p class=\"date\">%d</p>
-<p class=\"author\">by %a</p>")))
-(setq org-html-postamble t)
-(setq org-html-postamble-format
-      '(("en" "<p class=\"author\">Author: %a</p>
+(require 'ox)
+
+(org-export-define-derived-backend 'html-styles 'html
+  :menu-entry
+  '(?h 1
+       ((?D "As HTML (Default)" eddie/org-html-export-to-html-with-default-style)
+	(?d "As HTML (Default) File"
+	    (lambda (a s v b)
+	      (if a (eddie/org-html-export-to-html-with-default-style t s v b)
+		(org-open-file
+		 (eddie/org-html-export-to-html-with-default-style nil s v b)))))
+	(?F "As HTML (Foo)" eddie/org-html-export-to-html-with-foo-style)
+	(?f "As HTML (Foo) File"
+	    (lambda (a s v b)
+	      (if a (eddie/org-html-export-to-html-with-foo-style t s v b)
+		(org-open-file
+		 (eddie/org-html-export-to-html-with-foo-style nil s v b))))))))
+
+(defun eddie/org-html-export-style-default ()
+  (setq-local org-html-doctype "html5")
+  (setq-local org-html-html5-fancy t)
+  (setq-local org-html-head-include-default-style t)
+  (setq-local org-html-head "")
+  (setq-local org-html-head-include-scripts t)
+  (setq-local org-html-preamble t)
+  (setq-local org-html-preamble-format '(("en" "")))
+  (setq-local org-html-postamble t)
+  (setq-local org-html-postamble-format
+	'(("en" "<p class=\"author\">Author: %a (%e)</p>
 <p class=\"date\">Date: %d</p>
-<p class=\"modified\">Modified: %C</p>")))
-(setq org-html-htmlize-output-type nil)
+<p class=\"creator\">%c</p>")))
+  (setq-local org-html-htmlize-output-type 'css)
+  (setq-local org-html-with-latex 'mathjax)
+  (setq-local org-html-self-link-headlines nil))
+
+(defun eddie/org-html-export-style-foo ()
+  (setq-local org-html-doctype "html5")
+  (setq-local org-html-html5-fancy t)
+  (setq-local org-html-head-include-default-style nil)
+  (setq-local org-html-head
+    (concat
+     ;; (eddie/html-style-tag-with-file "css/reset.css")
+     ;; (eddie/html-style-tag-with-file "css/style.css")
+     (string-from-file (concat eddie/default-emacs-dir "html-resources/remote-orgcss.html"))
+     (string-from-file (concat eddie/default-emacs-dir "html-resources/remote-katex.html"))))
+  (setq-local org-html-head-include-scripts nil)
+  (setq-local org-html-preamble t)
+  (setq-local org-html-preamble-format '(("en" "")))
+  (setq-local org-html-postamble t)
+  (setq-local org-html-postamble-format
+	'(("en" "<p class=\"author\">Author: %a</p>
+<p class=\"date\">Date: %d</p>")))
+  (setq-local org-html-htmlize-output-type 'css)
+  (setq-local org-html-with-latex 'verbatim)
+  (setq-local org-html-self-link-headlines nil))
+
+(defun eddie/org-html-export-to-html-with-default-style
+    (&optional async subtreep visible-only body-only ext-plist)
+  (eddie/org-html-export-style-default)
+  (org-html-export-to-html async subtreep visible-only body-only ext-plist))
+
+(defun eddie/org-html-export-to-html-with-foo-style
+    (&optional async subtreep visible-only body-only ext-plist)
+  (eddie/org-html-export-style-foo)
+  (org-html-export-to-html async subtreep visible-only body-only ext-plist))
 
 ;; org notes & capture
 (setq org-default-notes-file "~/CloudStation/notes.org")
@@ -305,6 +351,8 @@
 (use-package ox-hugo
   :ensure t
   :after ox)
+
+(require 'ox-org)
 
 ;; default indent style
 (setq tab-width 4)

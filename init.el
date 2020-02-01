@@ -236,6 +236,12 @@
 	      (if a (eddie/org-html-export-to-html-with-default-style t s v b)
 		(org-open-file
 		 (eddie/org-html-export-to-html-with-default-style nil s v b)))))
+	(?E "As HTML (Empty)" eddie/org-html-export-to-html-with-empty-style)
+	(?e "As HTML (Empty) File"
+	    (lambda (a s v b)
+	      (if a (eddie/org-html-export-to-html-with-empty-style t s v b)
+		(org-open-file
+		 (eddie/org-html-export-to-html-with-empty-style nil s v b)))))
 	(?F "As HTML (Foo)" eddie/org-html-export-to-html-with-foo-style)
 	(?f "As HTML (Foo) File"
 	    (lambda (a s v b)
@@ -258,7 +264,25 @@
 <p class=\"creator\">%c</p>")))
   (setq-local org-html-htmlize-output-type 'css)
   (setq-local org-html-with-latex 'mathjax)
-  (setq-local org-html-self-link-headlines nil))
+  (setq-local org-html-self-link-headlines nil)
+  (setq-local org-html-toplevel-hlevel 2))
+
+(defun eddie/org-html-export-style-empty ()
+  (setq-local org-html-doctype "html5")
+  (setq-local org-html-html5-fancy t)
+  (setq-local org-html-head-include-default-style nil)
+  (setq-local org-html-head "")
+  (setq-local org-html-head-include-scripts nil)
+  (setq-local org-html-preamble t)
+  (setq-local org-html-preamble-format '(("en" "")))
+  (setq-local org-html-postamble t)
+  (setq-local org-html-postamble-format
+	'(("en" "<p class=\"author\">Author: %a (%e)</p>
+<p class=\"date\">Date: %d</p>")))
+  (setq-local org-html-htmlize-output-type 'css)
+  (setq-local org-html-with-latex 'verbatim)
+  (setq-local org-html-self-link-headlines nil)
+  (setq-local org-html-toplevel-hlevel 1))
 
 (defun eddie/org-html-export-style-foo ()
   (setq-local org-html-doctype "html5")
@@ -279,11 +303,17 @@
 <p class=\"date\">Date: %d</p>")))
   (setq-local org-html-htmlize-output-type 'css)
   (setq-local org-html-with-latex 'verbatim)
-  (setq-local org-html-self-link-headlines nil))
+  (setq-local org-html-self-link-headlines nil)
+  (setq-local org-html-toplevel-hlevel 2))
 
 (defun eddie/org-html-export-to-html-with-default-style
     (&optional async subtreep visible-only body-only ext-plist)
   (eddie/org-html-export-style-default)
+  (org-html-export-to-html async subtreep visible-only body-only ext-plist))
+
+(defun eddie/org-html-export-to-html-with-empty-style
+    (&optional async subtreep visible-only body-only ext-plist)
+  (eddie/org-html-export-style-empty)
   (org-html-export-to-html async subtreep visible-only body-only ext-plist))
 
 (defun eddie/org-html-export-to-html-with-foo-style

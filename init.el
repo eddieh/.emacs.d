@@ -277,7 +277,7 @@
   (setq-local org-html-preamble-format '(("en" "")))
   (setq-local org-html-postamble t)
   (setq-local org-html-postamble-format
-	'(("en" "<p class=\"author\">Author: %a (%e)</p>
+	'(("en" "<p class=\"author\">Author: %a</p>
 <p class=\"date\">Date: %d</p>")))
   (setq-local org-html-htmlize-output-type 'css)
   (setq-local org-html-with-latex 'verbatim)

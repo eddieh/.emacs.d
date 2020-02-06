@@ -955,6 +955,9 @@ command."
 
 (global-set-key (kbd "M-#") 'define-word)
 
+
+;;;  Pargraphs
+
 ;;; Stefan Monnier <foo at acm.org>. It is the opposite of fill-paragraph
 (defun unfill-paragraph (&optional region)
   "Takes a multi-line paragraph and makes it into a single line of text."
@@ -966,6 +969,11 @@ command."
 
 ;; Handy key definition
 (define-key global-map "\M-Q" 'unfill-paragraph)
+
+;; Emacs showing its age by thinking sentences are delimited by a
+;; double-space. Not on my watch!
+(setq sentence-end-double-space nil)
+
 
 (require 'plist-mode)
 (add-to-list 'auto-mode-alist '("\\.pbfilespec$" . plist-mode))

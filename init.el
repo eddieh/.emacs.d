@@ -133,11 +133,30 @@
 ;; Theme config
 (message "Loading Eddie's configuration theme…")
 
+;; Don't scale any zenburn faces!
+;;
+;; From the font face info pages:
+;;
+;;    The height of the font. In the simplest case, this is an integer
+;;    in units of 1/10 point.
+;;
+;;    The value can also be floating point or a function, which
+;;    specifies the height relative to an “underlying face”
+;;
+;; NOTE: The value must be set to a float "1.0" or it will think 1
+;; isn't a scale of default face size.
+(setq zenburn-height-minus-1 1.0
+      zenburn-height-plus-1 1.0
+      zenburn-height-plus-2 1.0
+      zenburn-height-plus-3 1.0
+      zenburn-height-plus-4 1.0)
+
 (use-package zenburn-theme
   :init
   (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
   :config
   (load-theme 'zenburn t))
+
 
 ;; Show Paren
 ;; Found this at: http://www.emacsblog.org/

@@ -289,6 +289,12 @@
 (defun eddie/org-html-export-style-empty ()
   (setq-local org-html-doctype "html5")
   (setq-local org-html-html5-fancy t)
+  (setq-local org-html-viewport
+      '((width "device-width")
+	(initial-scale "1")
+	(minimum-scale "")
+	(maximum-scale "1")
+	(user-scalable "")))
   (setq-local org-html-head-include-default-style nil)
   (setq-local org-html-head "")
   (setq-local org-html-head-include-scripts nil)

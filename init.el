@@ -1088,3 +1088,14 @@ command."
   (insert (format-time-string "%FT%T%z")))
 
 (global-set-key (kbd "C-c d") 'eddie/insert-date)
+
+
+;;; Image mode
+
+(defun eddie/edit-image-in-acorn ()
+  (interactive)
+  (shell-command (format "open -a Acorn \"%s\"" (buffer-file-name))))
+
+(add-hook 'image-mode-hook
+	  (lambda ()
+	    (local-set-key (kbd "e") 'eddie/edit-image-in-acorn)))

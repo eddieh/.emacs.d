@@ -1099,3 +1099,11 @@ command."
 (add-hook 'image-mode-hook
 	  (lambda ()
 	    (local-set-key (kbd "e") 'eddie/edit-image-in-acorn)))
+
+
+;;; Gnus
+
+;; Don't show the splash screen
+(setq gnus-inhibit-startup-message t)
+
+(setq gnus-init-file "~/.emacs.d/gnus.el")

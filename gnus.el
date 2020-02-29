@@ -2,6 +2,7 @@
 ;; http://www.cataclysmicmutation.com/2010/11/multiple-gmail-accounts-in-gnus/
 ;; https://github.com/redguardtoo/mastering-emacs-in-one-year-guide/blob/master/gnus-guide-en.org
 ;; https://www.gnu.org/software/emacs/manual/html_node/gnus/Group-Parameters.html
+;; http://doc.rix.si/cce/cce-gnus.html
 
 ;; This needs to be something, nil doesn't cut it. If we set it to a
 ;; mail method it will make further configuration confusing because

@@ -1106,4 +1106,8 @@ command."
 ;; Don't show the splash screen
 (setq gnus-inhibit-startup-message t)
 
+;; Keep gnus.el in the .emacs.d directory
 (setq gnus-init-file "~/.emacs.d/gnus.el")
+
+;; Quick access key
+(global-set-key (kbd "C-c g") 'gnus)

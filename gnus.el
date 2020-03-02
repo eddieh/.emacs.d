@@ -2,7 +2,12 @@
 ;; http://www.cataclysmicmutation.com/2010/11/multiple-gmail-accounts-in-gnus/
 ;; https://github.com/redguardtoo/mastering-emacs-in-one-year-guide/blob/master/gnus-guide-en.org
 ;; https://www.gnu.org/software/emacs/manual/html_node/gnus/Group-Parameters.html
+;; http://laltromondo.amusewiki.org/informatica/soft/mail_with_gnus/
 ;; http://doc.rix.si/cce/cce-gnus.html
+;; https://stackoverflow.com/questions/22150745/changing-the-display-name-of-a-gnus-group
+
+
+;;; Accounts
 
 ;; This needs to be something, nil doesn't cut it. If we set it to a
 ;; mail method it will make further configuration confusing because
@@ -16,11 +21,22 @@
 			 (directory "~/.maildir/primary")
 			 (expire-age 'never)))
 
+
+;;; Group/Mailbox & Article/Message list formats
+
 ;; Always show topics
 (add-hook 'gnus-group-mode-hook 'gnus-topic-mode)
 
 ;; Show all groups (mailboxes)
 (setq gnus-permanently-visible-groups ".*")
+
+
+;; Formats
+
+;; ‘M-x gnus-update-format’ will ‘eval’ the current form near the
+;; point, update the spec in question and pop you to a buffer where
+;; you can examine the resulting Lisp code to be run to generate the
+;; line.
 
 ;; Group format
 (setq gnus-group-line-format "%M%S%p%P%5y:%B%(%g%)\n")
@@ -75,11 +91,9 @@
 	  (address (or (getenv "EMAIL_PRIMARY") "EMAIL_PRIMARY not set")))
 	 (expiry-target . delete))))
 
-;;(setq message-send-mail-function 'message-send-mail-with-sendmail)
-;;(setq sendmail-program "/usr/local/bin/msmtp")
-
 
 ;; Threads
+
 ;; (setq gnus-summary-line-format "%*%U%R%z %(%&user-date; %-15,15f  %B%s%)\n"
 ;;       gnus-summary-thread-gathering-function 'gnus-gather-threads-by-references
 ;;       gnus-thread-sort-functions '(gnus-thread-sort-by-score)
@@ -91,6 +105,43 @@
 ;;       gnus-sum-thread-tree-vertical "│"
 ;;       gnus-user-date-format-alist '((t . "%d %b %Y %H:%M")))
 
-;; Discourage showing HTML email.
+
+;;; Viewing
+
+;; Discourage showing HTML email
 (setq mm-discouraged-alternatives '("text/html" "text/richtext")
       mm-automatic-display (remove "text/html" mm-automatic-display))
+
+
+;;; Sending
+
+;; Send mail with msmtp
+(setq message-send-mail-function 'message-send-mail-with-sendmail
+      sendmail-program "/usr/local/bin/msmtp")
+
+(defun eddie/message-sent-group-for-group (group)
+  (cond
+   ((string-match-p (regexp-quote "nnmaildir+primary:") group)
+    "nnmaildir+primary:Sent Messages")
+   (t '((format-time-string "sent.%Y-%m")))))
+
+(setq gnus-message-archive-group 'eddie/message-sent-group-for-group
+      gnus-gcc-mark-as-read t)
+
+
+;;; Archiving
+
+;; function that can possibly be used to archive mail
+;; gnus-summary-copy-article
+
+
+;;; Deleting
+
+;; gnus-summary-expire-articles
+;; gnus-summary-delete-article
+
+
+;;; Sorting
+
+
+;;; Searching

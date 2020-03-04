@@ -12,7 +12,9 @@
 ;; This needs to be something, nil doesn't cut it. If we set it to a
 ;; mail method it will make further configuration confusing because
 ;; mailbox names will not be qualified names.
-(setq gnus-select-method '(nntp "news.gwene.org"))
+;;
+;; Oh, the way to set it to nil is to use 'nnnil!
+(setq gnus-select-method '(nnnil "not-a-group"))
 
 ;; Use secondary select methods for mail so that mailboxes have
 ;; qualified names of the form method+identifier:MAILBOX.
@@ -91,6 +93,17 @@
 	  (address (or (getenv "EMAIL_PRIMARY") "EMAIL_PRIMARY not set")))
 	 (expiry-target . delete))))
 
+;; group list and summary list should behave like dired
+
+;; n - next unread
+;; p - previous unread
+
+;; N - next
+;; P - previous
+
+;; RET - view
+;; m - mark
+
 
 ;; Threads
 
@@ -125,20 +138,114 @@
     "nnmaildir+primary:Sent Messages")
    (t '((format-time-string "sent.%Y-%m")))))
 
+;; Copy to sent mailbox and mark the copy read
 (setq gnus-message-archive-group 'eddie/message-sent-group-for-group
       gnus-gcc-mark-as-read t)
 
 
-;;; Archiving
+;;; Sane commands and key bindings
+
+;; Compose new mail "c"
+(defun eddie/compose-mail ())
+(defun eddie/compose-mail-other-frame ())
+(defun eddie/compose-mail-other-window ())
+
+(define-key gnus-group-mode-map (kbd "c") 'gnus-group-mail)
+(define-key gnus-topic-mode-map (kbd "c") 'gnus-group-mail)
+(define-key gnus-summary-mode-map (kbd "c")
+  'gnus-summary-mail-other-window)
+
+;; Reply to message "r"
+;; • With prefix don't quote original
+;; • With active region, quote region
+(define-key gnus-summary-mode-map (kbd "r")
+  'gnus-summary-reply-with-original)
+
+;; DOC: Start composing a reply mail to the current message.
+;; The text in the region will be yanked.  If the region isn’t active,
+;; the entire article will be yanked.
+(define-key gnus-article-mode-map (kbd "r")
+  'gnus-article-reply-with-original)
+
+;; Reply all "R"
+(define-key gnus-summary-mode-map (kbd "R")
+  'gnus-summary-wide-reply-with-original)
+(define-key gnus-article-mode-map (kbd "R")
+  'gnus-article-wide-reply-with-original)
+
+;; Reply to list "l"
+;; TODO:
+;; gnus-summary-reply-to-list-with-original
+
+;; Forward "f"
+;; TODO:
+;; gnus-summary-mail-forward
+
+;; Marks
+
+(defcustom eddie/gnus-archive-mark ?a
+  "Mark used for messages to be archived."
+  :group 'gnus-summary-marks
+  :type 'character)
+
+(defcustom eddie/gnus-delete-mark ?d
+  "Mark used for messages to be archived."
+  :group 'gnus-summary-marks
+  :type 'character)
+
+;; Archiving "a"
+
+(defun eddie/gnus-summary-archive-article-forward (n)
+  "Archive N articles forwards.
+If N is negative, archive backwards instead.
+The difference between N and the number of articles archived is returned."
+  (interactive "p")
+  (gnus-summary-mark-forward n eddie/gnus-archive-mark))
 
 ;; function that can possibly be used to archive mail
 ;; gnus-summary-copy-article
 
+;; (defun eddie/gnus-summary-archive-article ()
+;;    "Copy current article to a suitable nnml archive group.
+;;  The copied article will be marked as \"ancient\", the original
+;;  will retain its current marks."
+;;    (interactive)
+;;    (let* ((group-name (if (string-match "^nnml:" gnus-newsgroup-name)
+;; 			  (substring gnus-newsgroup-name 5 nil)
+;; 		        gnus-newsgroup-name))
+;; 	  (archive-name (concat "nnml:archive." group-name))
+;; 	  (orig-mark (gnus-summary-article-mark)))
+;;      (gnus-summary-mark-article nil gnus-ancient-mark t)
+;;      (gnus-summary-copy-article 1 archive-name)
+;;      (gnus-summary-mark-article nil orig-mark t)))
 
-;;; Deleting
+(define-key gnus-summary-mode-map (kbd "a")
+  'eddie/gnus-summary-archive-article-forward)
+
+;; Deleting "d"
+
+(defun eddie/gnus-summary-delete-article-forward (n)
+  "Delete N articles forwards.
+If N is negative, delete backwards instead.
+The difference between N and the number of articles deleted is returned."
+  (interactive "p")
+  (gnus-summary-mark-forward n eddie/gnus-delete-mark))
+
+(define-key gnus-summary-mode-map (kbd "d")
+  'eddie/gnus-summary-archive-delete-forward)
 
 ;; gnus-summary-expire-articles
 ;; gnus-summary-delete-article
+
+;; Unread/read "🤷‍♂️"
+
+;; Junk/spam "j"
+
+;; unmark "u", unmark all "U"
+(define-key gnus-summary-mode-map (kbd "u")
+  'gnus-summary-clear-mark-forward)
+
+;; Execute marks (deletes, unread, junk, etc) "x"
 
 
 ;;; Sorting

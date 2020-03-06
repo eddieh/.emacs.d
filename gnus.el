@@ -164,7 +164,7 @@
 (defun thc/compose-mail-other-window ())
 
 (define-key gnus-group-mode-map (kbd "c") 'gnus-group-mail)
-(define-key gnus-topic-mode-map (kbd "c") 'gnus-group-mail)
+;(define-key gnus-topic-mode-map (kbd "c") 'gnus-group-mail)
 (define-key gnus-summary-mode-map (kbd "c")
   'gnus-summary-mail-other-window)
 
@@ -196,30 +196,27 @@
 
 ;; Marks
 
-(defcustom thc/gnus-unread-mark ?•
-  "Mark used to indicate a message is unread."
-  :group 'gnus-summary-marks
-  :type 'character)
+(defconst thc/gnus-unread-mark ?•
+  "Mark used to indicate a message is unread.")
 
-(defcustom thc/gnus-read-mark ?		; whitespace
-  "Mark used to indicate a message has been read."
-  :group 'gnus-summary-marks
-  :type 'character)
+(defconst thc/gnus-read-mark ?		; whitespace
+  "Mark used to indicate a message has been read.")
 
-(defcustom thc/gnus-archive-mark ?a
-  "Mark used for messages to be archived."
-  :group 'gnus-summary-marks
-  :type 'character)
+(defconst thc/gnus-archive-mark ?a
+  "Mark used for messages to be archived.")
 
-(defcustom thc/gnus-delete-mark ?d
-  "Mark used for messages to be deleted."
-  :group 'gnus-summary-marks
-  :type 'character)
+(defconst thc/gnus-delete-mark ?d
+  "Mark used for messages to be deleted.")
 
-(defcustom thc/gnus-junk-mark ?$
-  "Mark used for messages that are junk or spam."
-  :group 'gnus-summary-marks
-  :type 'character)
+(defconst thc/gnus-junk-mark ?$
+  "Mark used for messages that are junk or spam.")
+
+(defconst thc/gnus-summary-marks
+  (list thc/gnus-read-mark
+    thc/gnus-archive-mark
+    thc/gnus-delete-mark
+    thc/gnus-junk-mark)
+  "The list of marks used in ThreadCom.")
 
 (defun thc/gnus-unread-mark-p (mark)
   "Says whether MARK is the unread mark."
@@ -242,6 +239,11 @@
   (= mark thc/gnus-junk-mark))
 
 ;; Archiving "a"
+(defun thc/message-archive-group-for-group (group)
+  (cond
+   ((string-match-p (regexp-quote "nnmaildir+primary:") group)
+    "nnmaildir+primary:Archive")
+   (t nil)))
 
 (defun thc/gnus-summary-archive-article-forward (n)
   "Archive N articles forwards.
@@ -286,8 +288,15 @@ The difference between N and the number of articles deleted is returned."
 ;; gnus-summary-delete-article
 
 ;; Unread/read ";"
+(defun thc/gnus-summary-mark-as-read-forward (n)
+  "Archive N articles forwards.
+If N is negative, archive backwards instead.
+the difference between N and the number of articles archived is returned."
+  (interactive "p")
+  (gnus-summary-mark-forward n thc/gnus-read-mark))
+
 (define-key gnus-summary-mode-map (kbd ";")
-  'gnus-summary-mark-as-read-forward)
+  'thc/gnus-summary-mark-as-read-forward)
 
 ;; Junk/spam "j"
 (define-key gnus-summary-mode-map (kbd "j")
@@ -297,33 +306,52 @@ The difference between N and the number of articles deleted is returned."
 (define-key gnus-summary-mode-map (kbd "u")
   'gnus-summary-clear-mark-forward)
 
+(defun thc/gnus-move-article (article orig-group dest-group)
+  ;; Remove this article from future suppression.
+  (gnus-dup-unsuppress-article article)
+  (let* ((from-method (gnus-find-method-for-group orig-group))
+	 (to-method (gnus-find-method-for-group dest-group))
+	 (move-is-internal (gnus-server-equal from-method to-method)))
+    (gnus-request-move-article
+     article
+     orig-group
+     (nth 1 from-method)
+     (list
+      'gnus-request-accept-article dest-group to-method nil t)
+     nil
+     (and move-is-internal
+	  dest-group
+	  (gnus-group-real-name dest-group)))))
+
 ;; Execute marks (deletes, unread, junk, etc) "x"
 (defun thc/gnus-summary-execute-marks ()
   (interactive)
-  (message "Executing marks")
+  (message "Executing marks in %s" gnus-newsgroup-name)
   (let ((data gnus-newsgroup-data)
-	(marks '(thc/gnus-read-mark
-		 thc/gnus-archive-mark
-		 thc/gnus-delete-mark
-		 thc/gnus-junk-mark))
-	article id mark subject)
+	(group gnus-newsgroup-name)
+	(marks thc/gnus-summary-marks)
+	article id mark)
     (while data
       (when (memq (gnus-data-mark (car data)) marks)
 	(setq article (car data))
 	(setq id (gnus-data-number article))
 	(setq mark (gnus-data-mark article))
-	(setq subject (mail-header-subject (gnus-data-header article)))
-	(message "article => %d %s %s" id mark subject)
+	(message "article => %s %s %s" id mark
+		 (mail-header-subject (gnus-data-header article)))
 	(cond
 	 ((thc/gnus-read-mark-p mark)
 	  (message "read"))
 	 ((thc/gnus-archive-mark-p mark)
-	  (message "archive"))
-	 ((thc/gnus-delete-mark-p mark)
-	  (message "delete"))
-	 ((thc/gnus-junk-mark-p mark)
-	  (message "junk"))
-	 (t (message "unmarked")))
+	  (progn
+	    (message "archive")
+	    (let ((archive-group (thc/message-archive-group-for-group group)))
+	      (gnus-summary-mark-article id gnus-ancient-mark t)
+	      (thc/gnus-move-article article group archive-group))))
+	  ((thc/gnus-delete-mark-p mark)
+	   (message "delete"))
+	  ((thc/gnus-junk-mark-p mark)
+	   (message "junk"))
+	  (t (message "unmarked")))
 	(message "next..."))
       (setq data (cdr data)))))
 

@@ -65,6 +65,7 @@
 (add-to-list 'load-path "~/site-lisp/plist-mode")
 (add-to-list 'load-path "~/.emacs.d/site-lisp")
 (add-to-list 'load-path "/opt/local/share/emacs/site-lisp")
+(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e/")
 
 (setq exec-path (append exec-path '("/Library/TeX/texbin")))
 (setq exec-path (append exec-path '("/opt/local/bin")))
@@ -1110,4 +1111,77 @@ command."
 (setq gnus-init-file "~/.emacs.d/gnus.el")
 
 ;; Quick access key
-(global-set-key (kbd "C-c g") 'gnus)
+;; (global-set-key (kbd "C-c g") 'gnus)
+
+
+;;; mu4e
+
+(require 'mu4e)
+
+;; use mu4e for e-mail in emacs
+(setq mail-user-agent 'mu4e-user-agent)
+
+;; maildirs and mu dirs
+(setq mu4e-maildir "~/Maildir/primary")
+
+;; these must start with a "/", and must exist
+(setq mu4e-sent-folder   "/Sent Messages"
+      mu4e-drafts-folder "/Drafts"
+      mu4e-trash-folder  "/Deleted Messages"
+      mu4e-refile-folder "/Archive")
+
+;; avoids mbsync errors such as
+;; "Maildir error: UID 26088 is beyond highest assigned UID 1672."
+(setq mu4e-change-filenames-when-moving t)
+
+; mu4e-compose-format-flowed ?
+
+;; Send mail with msmtp; these are the same that `gnus' uses.
+(setq message-send-mail-function 'message-send-mail-with-sendmail
+      sendmail-program "/usr/local/bin/msmtp")
+
+;; Always prefere plaint text
+(setq mu4e-view-html-plaintext-ratio-heuristic most-positive-fixnum)
+
+;; Functions such as `match-func' are passed a complete message s-expression
+;; https://www.djcbsoftware.nl/code/mu/mu4e/The-message-s_002dexpression.html
+
+(setq mu4e-contexts `(
+  ,(make-mu4e-context
+    :name "Primary" ; iCloud
+    :enter-func (lambda () (mu4e-message "→ Primary ctx"))
+    :leave-func (lambda () (mu4e-message "⤺ Primary ctx"))
+    :match-func
+    (lambda (msg)
+      (when msg
+        (string-match-p "^/primary" (mu4e-message-field msg :maildir))))
+    :vars
+    `((user-mail-address . ,(or (getenv "EMAIL_PRIMARY") "EMAIL_PRIMARY@not.set"))
+      (user-full-name . ,(or (getenv "FULL_NAME") "FULL_NAME.not.set"))
+      (mu4e-compose-signature . "")
+      (mu4e-sent-folder . "/Sent Messages")
+      (mu4e-drafts-folder . "/Drafts")
+      (mu4e-trash-folder . "/Deleted Messages")
+      (mu4e-refile-folder . "/Archive")))
+  ,(make-mu4e-context
+    :name "Work" ; FastMail
+    :enter-func (lambda () (mu4e-message "→ Work ctx"))
+    :leave-func (lambda () (mu4e-message "⤺ Work ctx"))
+    :match-func
+    (lambda (msg)
+      (when msg
+        (string-match-p "^/work" (mu4e-message-field msg :maildir))))
+    :vars
+    `((user-mail-address . ,(or (getenv "EMAIL_WORK") "EMAIL_WORK@not.set"))
+      (user-full-name . ,(or (getenv "FULL_NAME") "FULL_NAME.not.set"))
+      (mu4e-compose-signature . "")
+      (mu4e-sent-folder . "")
+      (mu4e-drafts-folder . "")
+      (mu4e-trash-folder . "")
+      (mu4e-refile-folder . "")))))
+
+;; If your main Maildir is not configured as mu4e-maildir you'll get
+;; this error: 'mu4e~start: Args out of range: "", 0, 1'. This is the
+;; fix: (setq mu4e-context-policy 'pick-first)
+
+(global-set-key (kbd "C-c g") 'mu4e)

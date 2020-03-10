@@ -55,7 +55,6 @@
 ;; (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 ;; (add-to-list 'default-frame-alist '(ns-appearance . dark))
 
-
 ;; Path config
 (message "Loading Eddie's configuration paths…")
 
@@ -601,7 +600,7 @@
 
 (use-package magit
   :init
-  (global-set-key (kbd "C-c m") 'magit))
+  (global-set-key (kbd "C-x g") 'magit-status))
 
 (defun eddie/magit-status-bufferp ()
   (string= "magit-status-mode" major-mode))
@@ -1102,6 +1101,21 @@ command."
 	    (local-set-key (kbd "e") 'eddie/edit-image-in-acorn)))
 
 
+;; Email & name
+
+(defun eddie/full-name ()
+  (or (getenv "FULL_NAME") "FULL_NAME.not.set"))
+
+(defun eddie/email-primary ()
+  (or (getenv "EMAIL_PRIMARY") "EMAIL_PRIMARY@not.set"))
+
+(defun eddie/email-work ()
+  (or (getenv "EMAIL_WORK") "EMAIL_WORK@not.set"))
+
+(defun eddie/email-blog ()
+  (or (getenv "EMAIL_BLOG") "EMAIL_BLOG@not.set"))
+
+
 ;;; Gnus
 
 ;; Don't show the splash screen
@@ -1121,15 +1135,6 @@ command."
 ;; use mu4e for e-mail in emacs
 (setq mail-user-agent 'mu4e-user-agent)
 
-;; maildirs and mu dirs
-(setq mu4e-maildir "~/Maildir/primary")
-
-;; these must start with a "/", and must exist
-(setq mu4e-sent-folder   "/Sent Messages"
-      mu4e-drafts-folder "/Drafts"
-      mu4e-trash-folder  "/Deleted Messages"
-      mu4e-refile-folder "/Archive")
-
 ;; avoids mbsync errors such as
 ;; "Maildir error: UID 26088 is beyond highest assigned UID 1672."
 (setq mu4e-change-filenames-when-moving t)
@@ -1140,7 +1145,7 @@ command."
 (setq message-send-mail-function 'message-send-mail-with-sendmail
       sendmail-program "/usr/local/bin/msmtp")
 
-;; Always prefere plaint text
+;; Always prefere plain text
 (setq mu4e-view-html-plaintext-ratio-heuristic most-positive-fixnum)
 
 ;; Functions such as `match-func' are passed a complete message s-expression
@@ -1156,9 +1161,11 @@ command."
       (when msg
         (string-match-p "^/primary" (mu4e-message-field msg :maildir))))
     :vars
-    `((user-mail-address . ,(or (getenv "EMAIL_PRIMARY") "EMAIL_PRIMARY@not.set"))
-      (user-full-name . ,(or (getenv "FULL_NAME") "FULL_NAME.not.set"))
+    `((user-mail-address . ,(eddie/email-primary))
+      (user-full-name . ,(eddie/full-name))
       (mu4e-compose-signature . "")
+      (mu4e-maildir . "~/Maildir/primary")
+      (mu4e-mu-home . "~/.mu/primary")
       (mu4e-sent-folder . "/Sent Messages")
       (mu4e-drafts-folder . "/Drafts")
       (mu4e-trash-folder . "/Deleted Messages")
@@ -1172,16 +1179,72 @@ command."
       (when msg
         (string-match-p "^/work" (mu4e-message-field msg :maildir))))
     :vars
-    `((user-mail-address . ,(or (getenv "EMAIL_WORK") "EMAIL_WORK@not.set"))
-      (user-full-name . ,(or (getenv "FULL_NAME") "FULL_NAME.not.set"))
+    `((user-mail-address . ,(eddie/email-work))
+      (user-full-name . ,(eddie/full-name))
+      (mu4e-maildir . "~/Maildir/work")
+      (mu4e-mu-home . "~/.mu/work")
       (mu4e-compose-signature . "")
       (mu4e-sent-folder . "")
       (mu4e-drafts-folder . "")
       (mu4e-trash-folder . "")
-      (mu4e-refile-folder . "")))))
+      (mu4e-refile-folder . "")))
+  ,(make-mu4e-context
+    :name "Blog" ; Gmail
+    :enter-func (lambda () (mu4e-message "→ Blog ctx"))
+    :leave-func (lambda () (mu4e-message "⤺ Blog ctx"))
+    :match-func
+    (lambda (msg)
+      (when msg
+        (string-match-p "^/blog" (mu4e-message-field msg :maildir))))
+    :vars
+    `((user-mail-address . ,(eddie/email-blog))
+      (user-full-name . ,(eddie/full-name))
+      (mu4e-compose-signature . "")
+      (mu4e-maildir . "~/Maildir/blog")
+      (mu4e-mu-home . "~/.mu/blog")
+      (mu4e-sent-folder . "/[Gmail]/Sent Mail")
+      (mu4e-drafts-folder . "/[Gmail]/Drafts")
+      (mu4e-trash-folder . "/[Gmail]/Trash")
+      (mu4e-refile-folder . "/[Gmail]/All Mail")))))
 
 ;; If your main Maildir is not configured as mu4e-maildir you'll get
 ;; this error: 'mu4e~start: Args out of range: "", 0, 1'. This is the
-;; fix: (setq mu4e-context-policy 'pick-first)
+;; fix:
+(setq mu4e-context-policy 'ask-if-none)
 
-(global-set-key (kbd "C-c g") 'mu4e)
+(eval-when-compile (require 'cl)) ;; lexical-let
+
+(defun eddie/mu4e-is-current-account (account)
+  (string= (mu4e-context-name (mu4e-context-current)) account))
+
+(defun eddie/mu4e-switch-account (account)
+  (if (and (mu4e~proc-running-p)
+	   (not (eddie/mu4e-is-current-account account)))
+      (lexical-let ((original-sentinel (process-sentinel mu4e~proc-process))
+		    (original-account account))
+	(set-process-sentinel mu4e~proc-process
+			      (lambda (proc event)
+				(funcall original-sentinel proc event)
+				(mu4e-context-switch t original-account)
+				(mu4e)))
+	(mu4e-quit))
+    (mu4e)))
+
+(defun eddie/mu4e-primary ()
+  "Start mu4e with primary account."
+  (interactive)
+  (eddie/mu4e-switch-account "Primary"))
+
+(defun eddie/mu4e-work ()
+  "Start mu4e with work account."
+  (interactive)
+  (eddie/mu4e-switch-account "Work"))
+
+(defun eddie/mu4e-blog ()
+  "Start mu4e with blog account."
+  (interactive)
+  (eddie/mu4e-switch-account "Blog"))
+
+(global-set-key (kbd "C-c m p") 'eddie/mu4e-primary)
+(global-set-key (kbd "C-c m w") 'eddie/mu4e-work)
+(global-set-key (kbd "C-c m b") 'eddie/mu4e-blog)

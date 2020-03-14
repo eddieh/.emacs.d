@@ -55,6 +55,9 @@
 ;; (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 ;; (add-to-list 'default-frame-alist '(ns-appearance . dark))
 
+;; (setq header-line-format nil)
+;; (setq mode-line-format nil)
+
 ;; Path config
 (message "Loading Eddie's configuration paths…")
 
@@ -1101,6 +1104,32 @@ command."
 	    (local-set-key (kbd "e") 'eddie/edit-image-in-acorn)))
 
 
+;;; Wrapping
+
+;; turn wrapping off (no wrap)
+(global-set-key (kbd "C-c v n")
+		(lambda ()
+		  (interactive)
+		  (visual-fill-column-mode -1)
+		  (visual-line-mode -1)
+		  (toggle-word-wrap -1)))
+
+
+;; wrap to frame
+(global-set-key (kbd "C-c v w")
+		(lambda ()
+		  (interactive)
+		  (visual-fill-column-mode -1)
+		  (visual-line-mode 1)))
+
+;; wrap to fill column
+(global-set-key (kbd "C-c v W")
+		(lambda ()
+		  (interactive)
+		  (visual-fill-column-mode 1)
+		  (visual-line-mode 1)))
+
+
 ;; Email & name
 
 (defun eddie/full-name ()
@@ -1139,14 +1168,47 @@ command."
 ;; "Maildir error: UID 26088 is beyond highest assigned UID 1672."
 (setq mu4e-change-filenames-when-moving t)
 
-; mu4e-compose-format-flowed ?
-
 ;; Send mail with msmtp; these are the same that `gnus' uses.
 (setq message-send-mail-function 'message-send-mail-with-sendmail
       sendmail-program "/usr/local/bin/msmtp")
 
 ;; Always prefere plain text
 (setq mu4e-view-html-plaintext-ratio-heuristic most-positive-fixnum)
+
+; mu4e-compose-format-flowed ?
+
+;; (setq mu4e-view-mode-hook nil)
+
+;; The following doesn't work because the hook is called before
+;; mu4e~view-message is set.
+
+;; (add-hook 'mu4e-view-mode-hook
+;;   (lambda ()
+;;     (with-current-buffer mu4e~view-buffer-name
+;;       (when (mu4e-message-has-field mu4e~view-message :body-txt)
+;; 	(progn
+;; 	  (visual-fill-column-mode 1)
+;; 	  (visual-line-mode 1))))))
+
+(defun eddie/toggle-visual-fill-column-mode ()
+  "Toggle visual fill column based editing in the current
+buffer."
+  (interactive)
+  (if visual-fill-column-mode
+      (progn
+	(visual-fill-column-mode -1)
+	(visual-line-mode -1))
+    (progn
+      (visual-fill-column-mode 1)
+      (visual-line-mode 1))))
+
+(define-key mu4e-view-mode-map (kbd "W")
+  'eddie/toggle-visual-fill-column-mode)
+
+(define-key-after mu4e-view-mode-map
+  [menu-bar headers wrap-column]
+  '("Toggle wrap to fill column" . eddie/toggle-visual-fill-column-mode)
+  'wrap-lines)
 
 ;; Functions such as `match-func' are passed a complete message s-expression
 ;; https://www.djcbsoftware.nl/code/mu/mu4e/The-message-s_002dexpression.html
@@ -1207,12 +1269,17 @@ command."
       (mu4e-trash-folder . "/[Gmail]/Trash")
       (mu4e-refile-folder . "/[Gmail]/All Mail")))))
 
+;; Gmail may need this:
+;; (setq mu4e-sent-messages-behavior 'delete)
+
 ;; If your main Maildir is not configured as mu4e-maildir you'll get
 ;; this error: 'mu4e~start: Args out of range: "", 0, 1'. This is the
 ;; fix:
 (setq mu4e-context-policy 'ask-if-none)
 
 (eval-when-compile (require 'cl)) ;; lexical-let
+
+(setq mu4e-confirm-quit nil)
 
 (defun eddie/mu4e-is-current-account (account)
   (string= (mu4e-context-name (mu4e-context-current)) account))

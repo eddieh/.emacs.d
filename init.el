@@ -1231,7 +1231,8 @@ buffer."
       (mu4e-sent-folder . "/Sent Messages")
       (mu4e-drafts-folder . "/Drafts")
       (mu4e-trash-folder . "/Deleted Messages")
-      (mu4e-refile-folder . "/Archive")))
+      (mu4e-refile-folder . "/Archive")
+      (mu4e-get-mail-command . "mbsync primary")))
   ,(make-mu4e-context
     :name "Work" ; FastMail
     :enter-func (lambda () (mu4e-message "→ Work ctx"))
@@ -1267,7 +1268,8 @@ buffer."
       (mu4e-sent-folder . "/[Gmail]/Sent Mail")
       (mu4e-drafts-folder . "/[Gmail]/Drafts")
       (mu4e-trash-folder . "/[Gmail]/Trash")
-      (mu4e-refile-folder . "/[Gmail]/All Mail")))))
+      (mu4e-refile-folder . "/[Gmail]/All Mail")
+      (mu4e-get-mail-command . "mbsync blog")))))
 
 ;; Gmail may need this:
 ;; (setq mu4e-sent-messages-behavior 'delete)
@@ -1295,7 +1297,9 @@ buffer."
 				(mu4e-context-switch t original-account)
 				(mu4e)))
 	(mu4e-quit))
-    (mu4e)))
+    (progn
+      (mu4e-context-switch t account)
+      (mu4e))))
 
 (defun eddie/mu4e-primary ()
   "Start mu4e with primary account."

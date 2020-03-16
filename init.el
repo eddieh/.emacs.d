@@ -1106,6 +1106,8 @@ command."
 
 ;;; Wrapping
 
+(use-package visual-fill-column)
+
 ;; turn wrapping off (no wrap)
 (global-set-key (kbd "C-c v n")
 		(lambda ()
@@ -1225,7 +1227,7 @@ buffer."
     :vars
     `((user-mail-address . ,(eddie/email-primary))
       (user-full-name . ,(eddie/full-name))
-      (mu4e-compose-signature . "")
+      (mu4e-compose-signature . nil)
       (mu4e-maildir . "~/Maildir/primary")
       (mu4e-mu-home . "~/.mu/primary")
       (mu4e-sent-folder . "/Sent Messages")
@@ -1262,7 +1264,7 @@ buffer."
     :vars
     `((user-mail-address . ,(eddie/email-blog))
       (user-full-name . ,(eddie/full-name))
-      (mu4e-compose-signature . "")
+      (mu4e-compose-signature . nil)
       (mu4e-maildir . "~/Maildir/blog")
       (mu4e-mu-home . "~/.mu/blog")
       (mu4e-sent-folder . "/[Gmail]/Sent Mail")
@@ -1273,6 +1275,9 @@ buffer."
 
 ;; Gmail may need this:
 ;; (setq mu4e-sent-messages-behavior 'delete)
+;; (setq mu4e-sent-messages-behavior (lambda ()
+;;     (if (string= (message-sendmail-envelope-from) (eddie/email-blog))
+;; 	'delete 'sent)))
 
 ;; If your main Maildir is not configured as mu4e-maildir you'll get
 ;; this error: 'mu4e~start: Args out of range: "", 0, 1'. This is the

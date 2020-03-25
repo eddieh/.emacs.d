@@ -1174,6 +1174,9 @@ command."
 (setq message-send-mail-function 'message-send-mail-with-sendmail
       sendmail-program "/usr/local/bin/msmtp")
 
+;; By default show the senders email address
+(setq mu4e-view-show-addresses t)
+
 ;; Always prefere plain text
 (setq mu4e-view-html-plaintext-ratio-heuristic most-positive-fixnum)
 
@@ -1211,6 +1214,19 @@ buffer."
   [menu-bar headers wrap-column]
   '("Toggle wrap to fill column" . eddie/toggle-visual-fill-column-mode)
   'wrap-lines)
+
+(defun eddie/mu4e-search-for-sender (msg)
+  "Search for messages sent by the sender of the message at point."
+  (mu4e-headers-search
+    (concat "from:" (cdar (mu4e-message-field msg :from)))))
+
+;; define 'x' as the shortcut
+(add-to-list 'mu4e-view-actions
+    '("xsearch for sender" . eddie/mu4e-search-for-sender) t)
+
+;; define 'b' as the shortcut
+(add-to-list 'mu4e-view-actions
+    '("bview message in browser" . mu4e-action-view-in-browser) t)
 
 ;; Functions such as `match-func' are passed a complete message s-expression
 ;; https://www.djcbsoftware.nl/code/mu/mu4e/The-message-s_002dexpression.html
@@ -1278,6 +1294,13 @@ buffer."
 ;; (setq mu4e-sent-messages-behavior (lambda ()
 ;;     (if (string= (message-sendmail-envelope-from) (eddie/email-blog))
 ;; 	'delete 'sent)))
+
+;; More Gmail garbage:
+;; (add-hook 'mu4e-mark-execute-pre-hook
+;;     (lambda (mark msg)
+;;       (cond ((member mark '(refile trash)) (mu4e-action-retag-message msg "-\\Inbox"))
+;; 	    ((equal mark 'flag) (mu4e-action-retag-message msg "\\Starred"))
+;; 	    ((equal mark 'unflag) (mu4e-action-retag-message msg "-\\Starred")))))
 
 ;; If your main Maildir is not configured as mu4e-maildir you'll get
 ;; this error: 'mu4e~start: Args out of range: "", 0, 1'. This is the

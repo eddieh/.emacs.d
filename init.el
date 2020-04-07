@@ -1140,8 +1140,8 @@ command."
 (defun eddie/email-primary ()
   (or (getenv "EMAIL_PRIMARY") "EMAIL_PRIMARY@not.set"))
 
-(defun eddie/email-work ()
-  (or (getenv "EMAIL_WORK") "EMAIL_WORK@not.set"))
+(defun eddie/email-corp ()
+  (or (getenv "EMAIL_CORP") "EMAIL_CORP@not.set"))
 
 (defun eddie/email-blog ()
   (or (getenv "EMAIL_BLOG") "EMAIL_BLOG@not.set"))
@@ -1252,23 +1252,23 @@ buffer."
       (mu4e-refile-folder . "/Archive")
       (mu4e-get-mail-command . "mbsync primary")))
   ,(make-mu4e-context
-    :name "Work" ; FastMail
-    :enter-func (lambda () (mu4e-message "→ Work ctx"))
-    :leave-func (lambda () (mu4e-message "⤺ Work ctx"))
+    :name "Corp" ; FastMail
+    :enter-func (lambda () (mu4e-message "→ Corp ctx"))
+    :leave-func (lambda () (mu4e-message "⤺ Corp ctx"))
     :match-func
     (lambda (msg)
       (when msg
-        (string-match-p "^/work" (mu4e-message-field msg :maildir))))
+        (string-match-p "^/corp" (mu4e-message-field msg :maildir))))
     :vars
-    `((user-mail-address . ,(eddie/email-work))
+    `((user-mail-address . ,(eddie/email-corp))
       (user-full-name . ,(eddie/full-name))
-      (mu4e-maildir . "~/Maildir/work")
-      (mu4e-mu-home . "~/.mu/work")
-      (mu4e-compose-signature . "")
-      (mu4e-sent-folder . "")
-      (mu4e-drafts-folder . "")
-      (mu4e-trash-folder . "")
-      (mu4e-refile-folder . "")))
+      (mu4e-maildir . "~/Maildir/corp")
+      (mu4e-mu-home . "~/.mu/corp")
+      (mu4e-compose-signature . nil)
+      (mu4e-sent-folder . "/Sent")
+      (mu4e-drafts-folder . "/Drafts")
+      (mu4e-trash-folder . "/Trash")
+      (mu4e-refile-folder . "/Archive")))
   ,(make-mu4e-context
     :name "Blog" ; Gmail
     :enter-func (lambda () (mu4e-message "→ Blog ctx"))
@@ -1334,10 +1334,10 @@ buffer."
   (interactive)
   (eddie/mu4e-switch-account "Primary"))
 
-(defun eddie/mu4e-work ()
-  "Start mu4e with work account."
+(defun eddie/mu4e-corp ()
+  "Start mu4e with corp account."
   (interactive)
-  (eddie/mu4e-switch-account "Work"))
+  (eddie/mu4e-switch-account "Corp"))
 
 (defun eddie/mu4e-blog ()
   "Start mu4e with blog account."
@@ -1345,5 +1345,5 @@ buffer."
   (eddie/mu4e-switch-account "Blog"))
 
 (global-set-key (kbd "C-c m p") 'eddie/mu4e-primary)
-(global-set-key (kbd "C-c m w") 'eddie/mu4e-work)
+(global-set-key (kbd "C-c m c") 'eddie/mu4e-corp)
 (global-set-key (kbd "C-c m b") 'eddie/mu4e-blog)

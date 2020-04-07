@@ -12,15 +12,15 @@
     ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
  '(package-selected-packages
    (quote
-    (base16-theme company osx-dictionary opencl-mode org ox-hugo visual-fill-column projectile exec-path-from-shell gist htmlize json-mode caddyfile-mode magit emojify company-lsp lsp-ui lsp-mode neotree editorconfig use-package project-explorer markdown-mode ido-vertical-mode groovy-mode gradle-mode google-c-style go-mode gitignore-mode cmake-mode)))
+    (csharp-mode base16-theme company osx-dictionary opencl-mode org ox-hugo visual-fill-column projectile exec-path-from-shell gist htmlize json-mode caddyfile-mode magit emojify company-lsp lsp-ui lsp-mode neotree editorconfig use-package project-explorer markdown-mode ido-vertical-mode groovy-mode gradle-mode google-c-style go-mode gitignore-mode cmake-mode)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(safe-local-variable-values
    (quote
     ((eval when
-           (require
-            (quote rainbow-mode)
-            nil t)
-           (rainbow-mode 1)))))
+	   (require
+	    (quote rainbow-mode)
+	    nil t)
+	   (rainbow-mode 1)))))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
    (quote

@@ -443,6 +443,14 @@
 		  tab-width 4
 		  indent-tabs-mode nil)))
 
+(define-skeleton eddie/c-protect-include
+  "Insert ifndef multi-include protection."
+  "Define: "
+"#ifndef " str \n
+"#define " str \n "" \n "" _ "" \n "" \n
+"#endif /* " str " */" \n)
+(define-abbrev c-mode-abbrev-table "cpi" "" 'eddie/c-protect-include)
+
 
 ;; WebKit config
 (message "Loading Eddie's configuration WebKit…")
@@ -1268,7 +1276,8 @@ buffer."
       (mu4e-sent-folder . "/Sent")
       (mu4e-drafts-folder . "/Drafts")
       (mu4e-trash-folder . "/Trash")
-      (mu4e-refile-folder . "/Archive")))
+      (mu4e-refile-folder . "/Archive")
+      (mu4e-get-mail-command . "mbsync corp")))
   ,(make-mu4e-context
     :name "Blog" ; Gmail
     :enter-func (lambda () (mu4e-message "→ Blog ctx"))
@@ -1347,3 +1356,4 @@ buffer."
 (global-set-key (kbd "C-c m p") 'eddie/mu4e-primary)
 (global-set-key (kbd "C-c m c") 'eddie/mu4e-corp)
 (global-set-key (kbd "C-c m b") 'eddie/mu4e-blog)
+(put 'upcase-region 'disabled nil)

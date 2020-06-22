@@ -516,7 +516,15 @@
 ;; ActionScript
 (add-to-list 'auto-mode-alist '("\\.as\\'" . actionscript-mode))
 
+;; Obj-C, Objective-C, objc, Cocoa
 (add-to-list 'auto-mode-alist '("\\.mm\\'" . objc-mode))
+
+(defun eddie/objc-headerp ()
+  (and (string= (file-name-extension buffer-file-name) "h")
+       (re-search-forward "@\\<interface\\>"
+			  magic-mode-regexp-match-limit t)))
+
+(add-to-list 'magic-mode-alist '(eddie/objc-headerp . objc-mode))
 
 ;; Go mode config
 (use-package go-mode)

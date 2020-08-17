@@ -592,9 +592,6 @@
   (setq eshell-history-file-name "~/.bash_history"
 	eshell-history-size 64000))
 
-;; quick access
-(global-set-key (kbd "C-c e") 'eshell)
-
 ;; match key bindings for Terminal.app
 ;;   jump to previous mark ⌘↑
 ;;   jump to next mark ⌘↓
@@ -607,6 +604,36 @@
 					 (interactive)
 					 (eshell/clear t)
 					 (eshell-reset)))))
+
+;; http://www.howardism.org/Technical/Emacs/eshell-fun.html
+(defun eddie/eshell-for-current-dir ()
+  "Opens up a new shell in the directory associated with the
+current buffer's file. The eshell is renamed to match that
+directory to make multiple eshell windows easier."
+  (interactive)
+  (let* ((parent (if (buffer-file-name)
+                     (file-name-directory (buffer-file-name))
+                   default-directory))
+         (height (/ (window-total-height) 3))
+         (name   (car (last (split-string parent "/" t)))))
+    (split-window-vertically (- height))
+    (other-window 1)
+    (eshell "new")
+    (rename-buffer (concat "*eshell: " name "*"))
+
+    (insert (concat "ls"))
+    (eshell-send-input)))
+
+;; http://www.howardism.org/Technical/Emacs/eshell-fun.html
+(defun eshell/x ()
+  "Type x to kill current eshell session and window."
+  (insert "exit")
+  (eshell-send-input)
+  (delete-window))
+
+;; quick access
+(global-set-key (kbd "C-c e") 'eshell)
+(global-set-key (kbd "C-c E") 'eddie/eshell-for-current-dir)
 
 
 ; suppress the follow warning

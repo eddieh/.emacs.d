@@ -4,27 +4,20 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   (quote
-    ("84890723510d225c45aaff941a7e201606a48b973f0121cb9bcb0b9399be8cba" "78c1c89192e172436dbf892bd90562bc89e2cc3811b5f9506226e735a953a9c6" default)))
+   '("84890723510d225c45aaff941a7e201606a48b973f0121cb9bcb0b9399be8cba" "78c1c89192e172436dbf892bd90562bc89e2cc3811b5f9506226e735a953a9c6" default))
  '(fci-rule-color "#383838")
  '(nrepl-message-colors
-   (quote
-    ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
+   '("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3"))
  '(package-selected-packages
-   (quote
-    (csharp-mode base16-theme company osx-dictionary opencl-mode org ox-hugo visual-fill-column projectile exec-path-from-shell gist htmlize json-mode caddyfile-mode magit emojify company-lsp lsp-ui lsp-mode neotree editorconfig use-package project-explorer markdown-mode ido-vertical-mode groovy-mode gradle-mode google-c-style go-mode gitignore-mode cmake-mode)))
- '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
+   '(company-lsp lsp-mode csharp-mode base16-theme company osx-dictionary opencl-mode org ox-hugo visual-fill-column projectile exec-path-from-shell gist htmlize json-mode caddyfile-mode magit emojify lsp-ui neotree editorconfig use-package project-explorer markdown-mode ido-vertical-mode groovy-mode gradle-mode google-c-style go-mode gitignore-mode cmake-mode))
+ '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(safe-local-variable-values
-   (quote
-    ((eval when
-	   (require
-	    (quote rainbow-mode)
-	    nil t)
-	   (rainbow-mode 1)))))
+   '((eval when
+           (require 'rainbow-mode nil t)
+           (rainbow-mode 1))))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
-   (quote
-    ((20 . "#BC8383")
+   '((20 . "#BC8383")
      (40 . "#CC9393")
      (60 . "#DFAF8F")
      (80 . "#D0BF8F")
@@ -41,7 +34,7 @@
      (300 . "#7CB8BB")
      (320 . "#8CD0D3")
      (340 . "#94BFF3")
-     (360 . "#DC8CC3"))))
+     (360 . "#DC8CC3")))
  '(vc-annotate-very-old-color "#DC8CC3"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

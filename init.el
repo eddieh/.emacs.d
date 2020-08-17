@@ -112,11 +112,14 @@
 (add-to-list 'package-archives
              '("elpa" . "http://tromey.com/elpa/"))
 ;; (add-to-list 'package-archives
+;;              '("melpa" . "http://melpa.org/packages/"))
+
+;; Defunct package repos:
+;; (add-to-list 'package-archives
 ;; 	     '("melpa-stable" . "http://melpa-stable.milkbox.net/packages/") t)
 ;; (add-to-list 'package-archives
 ;;              '("marmalade" . "http://marmalade-repo.org/packages/"))
-;; (add-to-list 'package-archives
-;;              '("melpa" . "http://melpa.org/packages/"))
+
 (package-initialize)
 
 ;; install use-package if necessary
@@ -582,6 +585,13 @@
 ;; ~/.emacs.d/eshell/login file has been customized to show a message.
 (setq eshell-banner-message "")
 
+;; Use the values for HISTFILE and HISTSIZE.
+(if (package-installed-p 'exec-path-from-shell)
+    (setq eshell-history-file-name nil
+	eshell-history-size nil)
+  (setq eshell-history-file-name "~/.bash_history"
+	eshell-history-size 64000))
+
 ;; quick access
 (global-set-key (kbd "C-c e") 'eshell)
 
@@ -654,49 +664,20 @@
 (add-hook 'after-init-hook 'global-company-mode)
 
 ;; Language Server Protocol (LSP) mode
-;; (use-package lsp-mode
-;;   :ensure t
-;;   :config
+(use-package lsp-mode
+  :ensure t
+  :config
 
-;;   ;; make sure we have lsp-imenu everywhere we have LSP
-;;   (require 'lsp-imenu)
-;;   (add-hook 'lsp-after-open-hook 'lsp-enable-imenu)
-;;   ;; get lsp-python-enable defined
-;;   ;; NB: use either projectile-project-root or ffip-get-project-root-directory
-;;   ;;     or any other function that can be used to find the root directory of a project
-;;   (lsp-define-stdio-client lsp-python "python"
-;;                            #'projectile-project-root
-;;                            '("pyls"))
+  (use-package company-lsp
+    :config
+    (push 'company-lsp company-backends))
 
-;;   ;; make sure this is activated when python-mode is activated
-;;   ;; lsp-python-enable is created by macro above
-;;   (add-hook 'python-mode-hook
-;;             (lambda ()
-;;               (lsp-python-enable)))
+  (setq read-process-output-max (* 1024 1024))
+  (setq gc-cons-threshold 100000000)
+  (setq lsp-clients-clangd-executable "/usr/local/opt/llvm/bin/clangd"))
 
-;;   ;; lsp extras
-;;   ;; (use-package lsp-ui
-;;   ;;   :ensure t
-;;   ;;   :config
-;;   ;;   (setq lsp-ui-sideline-ignore-duplicate t)
-;;   ;;   (add-hook 'lsp-mode-hook 'lsp-ui-mode))
-
-;;   (use-package company-lsp
-;;     :config
-;;     (push 'company-lsp company-backends))
-
-;;   ;; NB: only required if you prefer flake8 instead of the default
-;;   ;; send pyls config via lsp-after-initialize-hook -- harmless for
-;;   ;; other servers due to pyls key, but would prefer only sending this
-;;   ;; when pyls gets initialised (:initialize function in
-;;   ;; lsp-define-stdio-client is invoked too early (before server
-;;   ;; start)) -- cpbotha
-;;   (defun lsp-set-cfg ()
-;;     (let ((lsp-cfg `(:pyls (:configurationSources ("flake8")))))
-;;       ;; TODO: check lsp--cur-workspace here to decide per server / project
-;;       (lsp--set-configuration lsp-cfg)))
-
-;;   (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg))
+(add-hook 'c-mode-hook (lambda () (lsp)))
+(add-hook 'objc-mode-hook (lambda () (lsp)))
 
 ;;; Stuff for speaking on OS X.
 (defun speak (str)

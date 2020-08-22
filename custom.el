@@ -9,7 +9,7 @@
  '(nrepl-message-colors
    '("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3"))
  '(package-selected-packages
-   '(company-lsp lsp-mode csharp-mode base16-theme company osx-dictionary opencl-mode org ox-hugo visual-fill-column projectile exec-path-from-shell gist htmlize json-mode caddyfile-mode magit emojify lsp-ui neotree editorconfig use-package project-explorer markdown-mode ido-vertical-mode groovy-mode gradle-mode google-c-style go-mode gitignore-mode cmake-mode))
+   '(yasnippet swift-mode use-package lsp-sourcekit lsp-mode csharp-mode base16-theme company osx-dictionary opencl-mode org ox-hugo visual-fill-column projectile exec-path-from-shell gist htmlize json-mode caddyfile-mode magit emojify lsp-ui neotree editorconfig project-explorer markdown-mode ido-vertical-mode groovy-mode gradle-mode google-c-style go-mode gitignore-mode cmake-mode))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(safe-local-variable-values
    '((eval when

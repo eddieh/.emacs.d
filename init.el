@@ -127,13 +127,15 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
+
+;; package syntactic sugar
 (require 'use-package)
+(setq use-package-verbose t) ;; make it easy to debug
+(setq use-package-always-ensure t) ;; install packages on-demand
 
-;; make it easy to debug
-(setq use-package-verbose t)
 
-;; install packages on-demand
-(setq use-package-always-ensure t)
+;; Ensure environment variables from the shell are in sync with Emacs
+(use-package exec-path-from-shell)
 
 
 ;; Theme config
@@ -419,6 +421,8 @@
 (setq tab-width 4)
 (setq-default indent-tabs-mode nil)
 
+(use-package yasnippet)
+
 ;; Java config
 (message "Loading Eddie's configuration for Java…")
 
@@ -528,6 +532,9 @@
 			  magic-mode-regexp-match-limit t)))
 
 (add-to-list 'magic-mode-alist '(eddie/objc-headerp . objc-mode))
+
+;; Swift mode config
+(use-package swift-mode)
 
 ;; Go mode config
 (use-package go-mode)
@@ -663,16 +670,16 @@ directory to make multiple eshell windows easier."
 
 ;;; Company mode
 
-  ;; use tab to indent or complete
-  (defun tab-indent-or-complete ()
-    (interactive)
-    (if (minibufferp)
-	(minibuffer-complete)
-      (if (eddie/magit-status-bufferp)
-	  (magit-section-toggle (magit-current-section))
-	(if (looking-at "\\_>")
-	    (company-complete-common)
-	  (indent-for-tab-command)))))
+;; use tab to indent or complete
+(defun tab-indent-or-complete ()
+  (interactive)
+  (if (minibufferp)
+      (minibuffer-complete)
+    (if (eddie/magit-status-bufferp)
+	(magit-section-toggle (magit-current-section))
+      (if (looking-at "\\_>")
+	  (company-complete-common)
+	(indent-for-tab-command)))))
 
 (use-package company
   :ensure t
@@ -692,19 +699,29 @@ directory to make multiple eshell windows easier."
 
 ;; Language Server Protocol (LSP) mode
 (use-package lsp-mode
-  :ensure t
   :config
 
-  (use-package company-lsp
-    :config
-    (push 'company-lsp company-backends))
+  (setq lsp-enable-text-document-color nil)
+  (setq lsp-log-io t)
 
   (setq read-process-output-max (* 1024 1024))
   (setq gc-cons-threshold 100000000)
   (setq lsp-clients-clangd-executable "/usr/local/opt/llvm/bin/clangd"))
 
+
+(use-package lsp-sourcekit
+  :after lsp-mode
+  :load-path "~/src/lsp-sourcekit"
+  :config
+  (setq lsp-sourcekit-executable "/Applications/Xcode11.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp"))
+
+(add-hook 'lsp-managed-mode-hook
+	  (lambda ()
+	    (setq-local company-backends '(company-capf))))
+
 (add-hook 'c-mode-hook (lambda () (lsp)))
 (add-hook 'objc-mode-hook (lambda () (lsp)))
+(add-hook 'swift-mode-hook (lambda () (lsp)))
 
 ;;; Stuff for speaking on OS X.
 (defun speak (str)

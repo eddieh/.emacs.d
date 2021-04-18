@@ -693,6 +693,9 @@ directory to make multiple eshell windows easier."
 
 ;;; YASnippet
 (use-package yasnippet)
+(use-package yasnippet-snippets
+  :after yasnippet)
+(yas-global-mode 1)
 
 ;;; Magit
 
@@ -732,9 +735,11 @@ directory to make multiple eshell windows easier."
 
 (add-hook 'after-init-hook 'global-company-mode)
 
-;; Language Server Protocol (LSP) mode
+;;; Language Server Protocol (LSP) mode
+
 (use-package lsp-mode
   :config
+  (setq lsp-enable-snippet t)
 
   (setq lsp-enable-text-document-color nil)
   (setq lsp-log-io t)
@@ -759,8 +764,19 @@ directory to make multiple eshell windows easier."
 (add-hook 'swift-mode-hook (lambda () (lsp)))
 
 ;; Ruby LSP
-(setq lsp-solargraph-diagnostics nil)
+;;(setq lsp-solargraph-diagnostics nil)
 (add-hook 'ruby-mode-hook #'lsp)
+
+;; Go LSP
+;;(setq lsp-clients-go-diagnostics-enabled nil)
+(add-hook 'go-mode-hook #'lsp)
+
+;;(lsp-diagnostics-mode -1)
+
+;; Disable diagnostics globally
+;; comming soon? lsp-diagnostics-disabled-modes
+(setq lsp-diagnostics-provider :none)
+(setq lsp-modeline-diagnostics-enable nil)
 
 ;;; Stuff for speaking on OS X.
 (defun speak (str)

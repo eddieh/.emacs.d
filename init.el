@@ -1,6 +1,10 @@
 ;; Eddie's Initialization File
 (message "Loading Eddie's initialization…")
 
+
+;; Shut your yap about "Package cl is deprecated"
+(setq byte-compile-warnings '(cl-functions))
+
 ;; Moving all the appearance stuff to the top
 
 ;; Appearance config
@@ -31,6 +35,12 @@
 
 ;(add-hook 'after-init-hook #'global-emojify-mode)
 
+;;(setq-default frame-title-format '("%f"))
+
+(setq-default frame-title-format
+          '(buffer-file-name "%f"
+            (dired-directory dired-directory "%b")))
+
 ; Set the font
 ;; (set-frame-font "DejaVu Sans Mono 15")
 ;; (set-default-font (if (eq system-type 'windows-nt)
@@ -42,8 +52,8 @@
         (right-fringe . 0)
         (left-fringe . 0)
         (font . ,(if (eq system-type 'windows-nt)
-                     "DejaVu Sans Mono 11"
-                   "DejaVu Sans Mono 15"))
+                     "DejaVu Sans Mono Book 11"
+                   "DejaVu Sans Mono Book 15"))
         ;; (menu-bar-lines . 0) ;; causes the menu-bar in MacOS X to
         ;; disappear
         (tool-bar-lines . 0)
@@ -58,12 +68,19 @@
 ;; (setq header-line-format nil)
 ;; (setq mode-line-format nil)
 
+;; (use-package simple-modeline
+;;   :hook (after-init . simple-modeline-mode))
+
+(use-package mood-line
+  :hook (after-init . mood-line-mode))
+
 ;; Path config
 (message "Loading Eddie's configuration paths…")
 
 (defconst eddie/default-emacs-dir "~/.emacs.d/"
   "My default emacs director.")
 
+(add-to-list 'load-path "~/site-lisp/plist-mode")
 (add-to-list 'load-path "~/site-lisp/plist-mode")
 (add-to-list 'load-path "~/.emacs.d/site-lisp")
 (add-to-list 'load-path "/opt/local/share/emacs/site-lisp")
@@ -136,6 +153,13 @@
 
 ;; Ensure environment variables from the shell are in sync with Emacs
 (use-package exec-path-from-shell)
+
+(require 'subr-x)
+(setq eddie/xcode-developer-dir
+      (string-trim (shell-command-to-string "xcode-select -p")))
+
+;; (find-file eddie/xcode-developer-dir)
+;; (setq eddie/xcode-sdk-headers-dir "")
 
 
 ;; Theme config
@@ -239,6 +263,8 @@
 ; don't change the behavior of  C-z, C-x, C-c, C-v
 (setq cua-enable-cua-keys nil)
 (cua-mode)
+
+(use-package htmlize)
 
 ;;; Org mode
 
@@ -417,11 +443,22 @@
 
 (require 'ox-org)
 
+(use-package ox-json
+  :ensure t
+  :after ox)
+
+(require 'ox-json)
+
 ;; default indent style
 (setq tab-width 4)
 (setq-default indent-tabs-mode nil)
 
-(use-package yasnippet)
+(use-package lorem-ipsum
+  :load-path "~/src/emacs-lorem-ipsum"
+  :config
+  (global-set-key (kbd "C-c C-l s") 'lorem-ipsum-insert-sentences)
+  (global-set-key (kbd "C-c C-l p") 'lorem-ipsum-insert-paragraphs)
+  (global-set-key (kbd "C-c C-l l") 'lorem-ipsum-insert-list))
 
 ;; Java config
 (message "Loading Eddie's configuration for Java…")
@@ -449,6 +486,9 @@
 	    (setq c-basic-offset 4
 		  tab-width 4
 		  indent-tabs-mode nil)))
+
+;; TODO: Xcode-style header/implementation switching
+;; Projectile `C-c C-p a' works
 
 (define-skeleton eddie/c-protect-include
   "Insert ifndef multi-include protection."
@@ -488,35 +528,6 @@
 (setq auto-mode-alist (cons '("/JavaScriptCore/.*\\.[ch|cpp]*$" . webkit-c++-mode)
                             auto-mode-alist))
 
-
-;; ADC config
-(message "Loading Eddie's configuration ADC3…")
-
-(defun adc3-c++-mode ()
-  "C++ mode with adjusted defaults for use with ADC3."
-  (interactive)
-  (c++-mode)
-  (c-set-style "bsd")
-  (setq indent-tabs-mode nil)
-  (setq c-basic-offset 2))
-
-(setq auto-mode-alist (cons '("/adc3-sdk/.*\\.[ch|cpp]*$" . adc3-c++-mode)
-                            auto-mode-alist))
-(setq auto-mode-alist (cons '("/adc3-jsc/.*\\.[ch|cpp]*$" . adc3-c++-mode)
-                            auto-mode-alist))
-
-
-;; ADC JavaScript
-(add-hook 'js-mode-hook
-	  (lambda ()
-	    (let ((filename (buffer-file-name)))
-	      (when (and filename
-			 (string-match "adc3-sdk" filename))
-		(message "ADC js-mode engage!")
-		(setq tab-width 2
-		      js-indent-level 2
-		      indent-tabs-mode nil)))))
-
 ;; JS Modules
 (add-to-list 'auto-mode-alist '("\\.mjs\\'" . js-mode))
 
@@ -527,11 +538,15 @@
 (add-to-list 'auto-mode-alist '("\\.mm\\'" . objc-mode))
 
 (defun eddie/objc-headerp ()
-  (and (string= (file-name-extension buffer-file-name) "h")
+  (and buffer-file-name
+       (string= (file-name-extension buffer-file-name) "h")
        (re-search-forward "@\\<interface\\>"
 			  magic-mode-regexp-match-limit t)))
 
 (add-to-list 'magic-mode-alist '(eddie/objc-headerp . objc-mode))
+
+;; Web mode
+(use-package web-mode)
 
 ;; Swift mode config
 (use-package swift-mode)
@@ -554,6 +569,11 @@
 ;; gitignroe mode config
 (use-package gitignore-mode)
 
+(use-package yaml-mode)
+(use-package dockerfile-mode)
+(use-package foreman-mode)
+(use-package dotenv-mode)
+
 (use-package editorconfig
   :ensure t
   :config
@@ -575,6 +595,8 @@
             (setq tab-width 8)))
 
 ;;; eshell
+
+(require 'eshell)
 
 ;; display a normal UNIX prompt
 (setq eshell-prompt-function
@@ -642,6 +664,16 @@ directory to make multiple eshell windows easier."
 (global-set-key (kbd "C-c e") 'eshell)
 (global-set-key (kbd "C-c E") 'eddie/eshell-for-current-dir)
 
+(setq eshell-visual-subcommands '())
+
+;;(add-to-list 'eshell-visual-commands "brew")
+(add-to-list 'eshell-visual-subcommands '("brew" "install"))
+;;(add-to-list 'eshell-visual-options '("git" "log" "--option"))
+
+;; remove first
+;; (setq eshell-visual-commands
+;;       (cdr eshell-visual-commands))
+
 
 ; suppress the follow warning
 ;   ls does not support --dired; see `dired-use-ls-dired' for more details.
@@ -658,6 +690,9 @@ directory to make multiple eshell windows easier."
 ;;        "\\|^Icon$"))			  ; CloudStation noise (wish
 ;; 					  ; there was a way to omit
 ;; 				          ; it as 'parent/Icon')
+
+;;; YASnippet
+(use-package yasnippet)
 
 ;;; Magit
 
@@ -722,6 +757,10 @@ directory to make multiple eshell windows easier."
 (add-hook 'c-mode-hook (lambda () (lsp)))
 (add-hook 'objc-mode-hook (lambda () (lsp)))
 (add-hook 'swift-mode-hook (lambda () (lsp)))
+
+;; Ruby LSP
+(setq lsp-solargraph-diagnostics nil)
+(add-hook 'ruby-mode-hook #'lsp)
 
 ;;; Stuff for speaking on OS X.
 (defun speak (str)

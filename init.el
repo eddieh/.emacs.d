@@ -778,6 +778,363 @@ directory to make multiple eshell windows easier."
 (setq lsp-diagnostics-provider :none)
 (setq lsp-modeline-diagnostics-enable nil)
 
+(use-package treemacs
+  :ensure t
+  :defer t
+  :init
+  (with-eval-after-load 'winum
+    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+  :config
+  (progn
+    (setq treemacs-collapse-dirs                 (if treemacs-python-executable 3 0)
+          treemacs-deferred-git-apply-delay      0.5
+          treemacs-directory-name-transformer    #'identity
+          treemacs-display-in-side-window        t
+          treemacs-eldoc-display                 t
+          treemacs-file-event-delay              5000
+          treemacs-file-extension-regex          treemacs-last-period-regex-value
+          treemacs-file-follow-delay             0.2
+          treemacs-file-name-transformer         #'identity
+          treemacs-follow-after-init             t
+          treemacs-git-command-pipe              ""
+          treemacs-goto-tag-strategy             'refetch-index
+          treemacs-indentation                   2
+          treemacs-indentation-string            " "
+          treemacs-is-never-other-window         nil
+          treemacs-max-git-entries               5000
+          treemacs-missing-project-action        'ask
+          treemacs-move-forward-on-expand        nil
+          treemacs-no-png-images                 nil
+          treemacs-no-delete-other-windows       t
+          treemacs-project-follow-cleanup        nil
+          treemacs-persist-file                  (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
+          treemacs-position                      'left
+          treemacs-read-string-input             'from-child-frame
+          treemacs-recenter-distance             0.1
+          treemacs-recenter-after-file-follow    nil
+          treemacs-recenter-after-tag-follow     nil
+          treemacs-recenter-after-project-jump   'always
+          treemacs-recenter-after-project-expand 'on-distance
+          treemacs-show-cursor                   nil
+          treemacs-show-hidden-files             t
+          treemacs-silent-filewatch              nil
+          treemacs-silent-refresh                nil
+          treemacs-sorting                       'alphabetic-asc
+          treemacs-space-between-root-nodes      t
+          treemacs-tag-follow-cleanup            t
+          treemacs-tag-follow-delay              1.5
+          treemacs-user-mode-line-format         nil
+          treemacs-user-header-line-format       nil
+          treemacs-width                         35
+          treemacs-workspace-switch-cleanup      nil)
+
+    (treemacs-resize-icons 20)
+
+    (treemacs-follow-mode t)
+    (treemacs-filewatch-mode t)
+    (treemacs-fringe-indicator-mode 'always)
+    (pcase (cons (not (null (executable-find "git")))
+                 (not (null treemacs-python-executable)))
+      (`(t . t)
+       (treemacs-git-mode 'deferred))
+      (`(t . _)
+       (treemacs-git-mode 'simple))))
+  :bind
+  (:map global-map
+        ("M-0"       . treemacs-select-window)
+        ("C-x t 1"   . treemacs-delete-other-windows)
+        ("C-x t t"   . treemacs)
+        ("C-x t B"   . treemacs-bookmark)
+        ("C-x t C-t" . treemacs-find-file)
+        ("C-x t M-t" . treemacs-find-tag)))
+
+(use-package treemacs-projectile
+  :after (treemacs projectile)
+  :ensure t)
+
+(use-package treemacs-icons-dired
+  :after (treemacs dired)
+  :ensure t
+  :config (treemacs-icons-dired-mode))
+
+(use-package treemacs-magit
+  :after (treemacs magit)
+  :ensure t)
+
+(require 'treemacs-themes)
+(require 'treemacs-icons)
+(treemacs-create-theme "Normal"
+  :icon-directory (concat eddie/default-emacs-dir "/icons")
+  :extends "Default"
+  :config
+  (progn
+    ;; directory and generic icon
+    (treemacs-create-icon
+     :file "folder-closed.png"
+     :extensions (root)
+     :fallback "")
+    (treemacs-create-icon
+     :file "folder-closed.png"
+     :extensions (dir-closed)
+     :fallback (propertize "+ " 'face 'treemacs-term-node-face))
+    (treemacs-create-icon
+     :file "folder-closed.png"
+     :extensions (dir-open)
+     :fallback (propertize "- " 'face 'treemacs-term-node-face))
+    (treemacs-create-icon
+     :file "file.png"
+     :extensions (fallback))
+
+    ;; file types
+    (treemacs-create-icon
+     :file "PBX-applescript-Icon.tiff"
+     :extensions ("applescript"))
+    ;; (treemacs-create-icon
+    ;;  :file "asciidoc.png"
+    ;;  :extensions ("adoc" "asciidoc"))
+    ;; (treemacs-create-icon
+    ;;  :file "asm.png"
+    ;;  :extensions ("asm" "arm"))
+    ;; (treemacs-create-icon
+    ;;  :file "audio.png"
+    ;;  :extensions ("mp3" "ogg" "oga" "wav" "flac"))
+    ;; (treemacs-create-icon
+    ;;  :file "babel.png"
+    ;;  :extensions ("babel"))
+    ;; (treemacs-create-icon
+    ;;  :file "babel.png"
+    ;;  :extensions ("babelrc" "babelignore" "babelrc.js"
+    ;; 		  "babelrc.json" "babel.config.js"))
+    (treemacs-create-icon
+     :file "ExecutableRef.tiff"
+     :extensions ("exe" "dll" "obj" "so" "o"))
+    (treemacs-create-icon
+     :file "PBX-c-Icon.tiff"
+     :extensions ("c"))
+    (treemacs-create-icon
+     :file "PBX-h-Icon.tiff"
+     :extensions ("h"))
+    ;; (treemacs-create-icon
+    ;;  :file "cert.png"
+    ;;  :extensions ("csr" "crt" "cer" "der" "pfx" "p12"
+    ;; 		  "p7b" "p7r" "src" "crl" "sst" "stl"))
+    ;; (treemacs-create-icon
+    ;;  :file "cmake.png"
+    ;;  :extensions ("cmake" "cmake-cache"))
+    ;; (treemacs-create-icon
+    ;;  :file "conf.png"
+    ;;  :extensions ("properties" "conf" "config" "cfg"
+    ;; 		  "ini" "xdefaults" "xresources"
+    ;; 		  "terminalrc" "ledgerrc"))
+    (treemacs-create-icon
+     :file "PBX-cpp-Icon.tiff"
+     :extensions ("cpp" "cxx" "tpp" "cc"))
+    (treemacs-create-icon
+     :file "PBX-hpp-Icon.tiff"
+     :extensions ("hpp" "hh"))
+    (treemacs-create-icon
+     :file "css.png"
+     :extensions ("css"))
+    ;; (treemacs-create-icon
+    ;;  :file "diff.png"
+    ;;  :extensions ("diff"))
+    ;; (treemacs-create-icon
+    ;;  :file "direnv.png"
+    ;;  :extensions ("envrc"))
+    ;; (treemacs-create-icon
+    ;;  :file "docker.png"
+    ;;  :extensions ("dockerfile" "docker-compose.yml"))
+    ;; (treemacs-create-icon
+    ;;  :file "editorcfg.png"
+    ;;  :extensions ("editorconfig"))
+    (treemacs-create-icon
+     :file "elisp.png"
+     :extensions ("el"))
+    (treemacs-create-icon
+     :file "elisp-bytecode.png"
+     :extensions ("elc"))
+    (treemacs-create-icon
+     :file "elisp-gzip.png"
+     :extensions ("el.gz"))
+    ;; (treemacs-create-icon
+    ;;  :file "erb.png"
+    ;;  :extensions ("erb"))
+    ;; (treemacs-create-icon
+    ;;  :file "erlang.png"
+    ;;  :extensions ("erl" "hrl"))
+    ;; (treemacs-create-icon
+    ;;  :file "eslint.png"
+    ;;  :extensions ("eslintrc" "eslintignore" "eslintcache"))
+    (treemacs-create-icon
+     :file "font.png"
+     :extensions ("woff" "woff2" "ttf" "otf"
+		  "eot" "pfa" "pfb" "sfd"))
+    ;; (treemacs-create-icon
+    ;;  :file "git.png"
+    ;;  :extensions ("git" "gitignore" "gitconfig"
+    ;; 		  "gitmodules" "gitattributes"))
+    ;; (treemacs-create-icon
+    ;;  :file "go.png"
+    ;;  :extensions ("go"))
+    (treemacs-create-icon
+     :file "markup.png"
+     :extensions ("html" "htm"))
+    (treemacs-create-icon
+     :file "image.png"
+     :extensions ("jpg" "jpeg" "bmp" "svg" "png"
+		  "xpm" "gif"))
+    ;; (treemacs-create-icon
+    ;;  :file "jar.png"
+    ;;  :extensions ("jar"))
+    ;; (treemacs-create-icon
+    ;;  :file "java.png"
+    ;;  :extensions ("java"))
+    ;; (treemacs-create-icon
+    ;;  :file "jinja2.png"
+    ;;  :extensions ("j2" "jinja2"))
+    (treemacs-create-icon
+     :file "js.png"
+     :extensions ("js" "jsx"))
+    ;; (treemacs-create-icon
+    ;;  :file "json.png"
+    ;;  :extensions ("json"))
+    ;; (treemacs-create-icon
+    ;;  :file "key.png"
+    ;;  :extensions ("key" "pem"))
+    ;; (treemacs-create-icon
+    ;;  :file "license.png"
+    ;;  :extensions ("license"))
+    ;; (treemacs-create-icon
+    ;;  :file "lisp.png"
+    ;;  :extensions ("lisp"))
+    ;; (treemacs-create-icon
+    ;;  :file "log.png"
+    ;;  :extensions ("log"))
+    ;; (treemacs-create-icon
+    ;;  :file "lua.png"
+    ;;  :extensions ("lua"))
+    ;; (treemacs-create-icon
+    ;;  :file "make.png"
+    ;;  :extensions ("makefile"))
+    ;; (treemacs-create-icon
+    ;;  :file "manifest.png"
+    ;;  :extensions ("manifest"))
+    ;; (treemacs-create-icon
+    ;;  :file "markdown.png"
+    ;;  :extensions ("md"))
+    ;; (treemacs-create-icon
+    ;;  :file "nginx.png"
+    ;;  :extensions ("nginx.conf" "nginx"))
+    ;; (treemacs-create-icon
+    ;;  :file "npm.png"
+    ;;  :extensions ("npmignore" "npmrc" "package.json"
+    ;; 		  "package-lock.json" "npm-shrinwrap.json"))
+    ;; (treemacs-create-icon
+    ;;  :file "org.png"
+    ;;  :extensions ("org"))
+    ;; (treemacs-create-icon
+    ;;  :file "patch.png"
+    ;;  :extensions ("patch"))
+    ;; (treemacs-create-icon
+    ;;  :file "pdf.png"
+    ;;  :extensions ("pdf"))
+    ;; (treemacs-create-icon
+    ;;  :file "perl.png"
+    ;;  :extensions ("pl" "pm" "perl"))
+    ;; (treemacs-create-icon
+    ;;  :file "perl6.png"
+    ;;  :extensions ("perl6"))
+    ;; (treemacs-create-icon
+    ;;  :file "pgsql.png"
+    ;;  :extensions ("pgsql"))
+    ;; (treemacs-create-icon
+    ;;  :file "php.png"
+    ;;  :extensions ("php"))
+    ;; (treemacs-create-icon
+    ;;  :file "phpunit.png"
+    ;;  :extensions ("phpunit" "phpunit.xml"))
+    ;; (treemacs-create-icon
+    ;;  :file "pip.png"
+    ;;  :extensions ("pipfile" "pipfile.lock"
+    ;; 		  "pip-requirements"))
+    (treemacs-create-icon
+     :file "Package.tiff"
+     :extensions ("pkg"))
+    ;; (treemacs-create-icon
+    ;;  :file "plsql.png"
+    ;;  :extensions ("plsql" "orcale"))
+    ;; (treemacs-create-icon
+    ;;  :file "project.png"
+    ;;  :extensions ("project"))
+    ;; (treemacs-create-icon
+    ;;  :file "puppet.png"
+    ;;  :extensions ("pp"))
+    (treemacs-create-icon
+     :file "python-doc.png"
+     :extensions ("py" "pyc"))
+    ;; (treemacs-create-icon
+    ;;  :file "r.png"
+    ;;  :extensions ("r"))
+    ;; (treemacs-create-icon
+    ;;  :file "rake.png"
+    ;;  :extensions ("rake" "rakefile"))
+    (treemacs-create-icon
+     :file "ruby-doc.png"
+     :extensions ("rb"))
+    ;; (treemacs-create-icon
+    ;;  :file "rust.png"
+    ;;  :extensions ("rs"))
+    ;; (treemacs-create-icon
+    ;;  :file "scons.png"
+    ;;  :extensions ("sconstruct" "sconstript"))
+    ;; (treemacs-create-icon
+    ;;  :file "scss.png"
+    ;;  :extensions ("scss"))
+    (treemacs-create-icon
+     :file "ExecutableRef.tiff"
+     :extensions ("sh" "zsh" "fish"))
+    ;; (treemacs-create-icon
+    ;;  :file "sql.png"
+    ;;  :extensions ("sql"))
+    ;; (treemacs-create-icon
+    ;;  :file "sqlite.png"
+    ;;  :extensions ("sqlite" "db3" "sqlite3"))
+    ;; (treemacs-create-icon
+    ;;  :file "swift.png"
+    ;;  :extensions ("swift"))
+    ;; (treemacs-create-icon
+    ;;  :file "tex.png"
+    ;;  :extensions ("tex"))
+    ;; (treemacs-create-icon
+    ;;  :file "toml.png"
+    ;;  :extensions ("toml"))
+    ;; (treemacs-create-icon
+    ;;  :file "vagrant.png"
+    ;;  :extensions ("vagrantfile"))
+    ;; (treemacs-create-icon
+    ;;  :file "video.png"
+    ;;  :extensions ("webm" "mp4" "avi" "mkv" "flv"
+    ;; 		  "mov" "wmv" "mpg" "mpeg" "mpv"))
+    ;; (treemacs-create-icon
+    ;;  :file "xml.png"
+    ;;  :extensions ("xml" "xsl"))
+    ;; (treemacs-create-icon
+    ;;  :file "yaml.png"
+    ;;  :extensions ("yml" "yaml" "travis.yml"))
+    ;; (treemacs-create-icon
+    ;;  :file "yarn.png"
+    ;;  :extensions ("yarn.lock" "yarnrc" "yarnclean"
+    ;; 		  "yarn-integrity" "yarn-metadata.json"
+    ;; 		  "yarnignore"))
+    ;; (treemacs-create-icon
+    ;;  :file "zip.png"
+    ;;  :extensions ("zip" "7z" "tar" "gz"
+    ;; 		  "rar" "tar.gz"))))
+    ))
+
+(treemacs-load-theme "Normal")
+
+
 ;;; Stuff for speaking on OS X.
 (defun speak (str)
   "Speak the string."
@@ -1069,7 +1426,8 @@ command."
    "*Definition*" nil nil
    (with-current-buffer standard-output
      (call-process-shell-command
-      (concat "Dictionary --html " (shell-quote-argument word)) nil t nil)
+      (concat "Dictionary --html "
+	      (shell-quote-argument word)) nil t nil)
      (define-word--format-definition))))
 
 (defun define-word ()
@@ -1082,9 +1440,11 @@ command."
 
 ;;;  Pargraphs
 
-;;; Stefan Monnier <foo at acm.org>. It is the opposite of fill-paragraph
+;;; Stefan Monnier <foo at acm.org>. It is the opposite of
+;;; fill-paragraph
 (defun unfill-paragraph (&optional region)
-  "Takes a multi-line paragraph and makes it into a single line of text."
+  "Takes a multi-line paragraph and makes it into a single line
+of text."
   (interactive (progn (barf-if-buffer-read-only) '(t)))
   (let ((fill-column (point-max))
         ;; This would override `fill-column' if it's an integer.
@@ -1226,6 +1586,8 @@ command."
 		  (interactive)
 		  (visual-fill-column-mode 1)
 		  (visual-line-mode 1)))
+
+(use-package fill-column-indicator)
 
 
 ;; Email & name

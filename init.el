@@ -1,7 +1,6 @@
 ;; Eddie's Initialization File
 (message "Loading Eddie's initialization…")
 
-
 ;; Shut your yap about "Package cl is deprecated"
 (setq byte-compile-warnings '(cl-functions))
 
@@ -52,8 +51,10 @@
         (right-fringe . 0)
         (left-fringe . 0)
         (font . ,(if (eq system-type 'windows-nt)
-                     "DejaVu Sans Mono Book 11"
-                   "DejaVu Sans Mono Book 15"))
+		     "DejaVuSansMono Nerd Font Book 11"
+		   "DejaVuSansMono Nerd Font Book 15"))
+                     ;;"DejaVu Sans Mono Book 11"
+                   ;;"DejaVu Sans Mono Book 15"))
         ;; (menu-bar-lines . 0) ;; causes the menu-bar in MacOS X to
         ;; disappear
         (tool-bar-lines . 0)
@@ -77,26 +78,39 @@
 ;; Path config
 (message "Loading Eddie's configuration paths…")
 
+;; Looks like we don't need exec-path-from-shell with Yamamoto
+;; Mitsuharu's Mac port of GNU Emacs
+
+;; Ensure environment variables from the shell are in sync with Emacs
+;;(use-package exec-path-from-shell)
+
+;; exec-path-from-shel
+;; Emacs library to ensure environment variables inside Emacs look the
+;; same as in the user's shell.
+;;(when (memq window-system '(mac ns x))
+;;  (exec-path-from-shell-initialize))
+
+;; Don't need to manually set the path since we get it from the shell
+;; (see above exec-path-from-shell).
+;; (setenv "PATH"
+;;         (concat (getenv "PATH")
+;; 		":/Library/TeX/texbin"
+;;                 ":/opt/local/bin"
+;;                 ":/opt/local/sbin"
+;; 		":/usr/local/bin"
+;;                 ":/Users/eddie/bin"))
+
 (defconst eddie/default-emacs-dir "~/.emacs.d/"
   "My default emacs director.")
 
 (add-to-list 'load-path "~/site-lisp/plist-mode")
-(add-to-list 'load-path "~/site-lisp/plist-mode")
 (add-to-list 'load-path "~/.emacs.d/site-lisp")
-(add-to-list 'load-path "/opt/local/share/emacs/site-lisp")
+;;(add-to-list 'load-path "/opt/local/share/emacs/site-lisp")
 (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e/")
 
-(setq exec-path (append exec-path '("/Library/TeX/texbin")))
-(setq exec-path (append exec-path '("/opt/local/bin")))
-(setq exec-path (append exec-path '("/usr/local/bin")))
-
-(setenv "PATH"
-        (concat (getenv "PATH")
-		":/Library/TeX/texbin"
-                ":/opt/local/bin"
-                ":/opt/local/sbin"
-		":/usr/local/bin"
-                ":/Users/eddie/bin"))
+;;(setq exec-path (append exec-path '("/Library/TeX/texbin")))
+;;(setq exec-path (append exec-path '("/opt/local/bin")))
+;;(setq exec-path (append exec-path '("/usr/local/bin")))
 
 ;(setenv "DICTIONARY" "en_US")
 ;; (setq ispell-program-name "hunspell")
@@ -144,15 +158,10 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
-
 ;; package syntactic sugar
 (require 'use-package)
 (setq use-package-verbose t) ;; make it easy to debug
 (setq use-package-always-ensure t) ;; install packages on-demand
-
-
-;; Ensure environment variables from the shell are in sync with Emacs
-(use-package exec-path-from-shell)
 
 (require 'subr-x)
 (setq eddie/xcode-developer-dir
@@ -189,6 +198,7 @@
   :config
   (load-theme 'zenburn t))
 
+(use-package rainbow-mode)
 
 ;; Show Paren
 ;; Found this at: http://www.emacsblog.org/
@@ -634,6 +644,30 @@
 					 (eshell/clear t)
 					 (eshell-reset)))))
 
+;; don't change the directory without cd
+(setq eshell-cd-on-directory nil)
+
+(defun eddie/eshell-name-buffer-with-dir ()
+  (let* ((curdir (eshell/pwd))
+	 (name (car (last (split-string curdir "/" t)))))
+      (rename-buffer (concat "  " name "") t)))
+
+(add-hook 'eshell-mode-hook
+	  'eddie/eshell-name-buffer-with-dir)
+
+(add-hook 'eshell-directory-change-hook
+	    'eddie/eshell-name-buffer-with-dir)
+
+;; Must return nil to indicate that we are not intercepting the
+;; command
+(add-hook 'eshell-named-command-hook
+	  (lambda (cmd args)
+	    (rename-buffer
+	     (concat " ️" cmd "") t) nil))
+
+(add-hook 'eshell-post-command-hook
+	  'eddie/eshell-name-buffer-with-dir)
+
 ;; http://www.howardism.org/Technical/Emacs/eshell-fun.html
 (defun eddie/eshell-for-current-dir ()
   "Opens up a new shell in the directory associated with the
@@ -660,9 +694,41 @@ directory to make multiple eshell windows easier."
   (eshell-send-input)
   (delete-window))
 
+(defun eddie/recent-eshell ()
+  (seq-some (lambda (buf)
+	      (if (equal
+		   (with-current-buffer buf major-mode)
+		   'eshell-mode)
+		  buf
+		nil))
+	    (buffer-list)))
+
+(defun eddie/eshell-recent-or-new ()
+  (interactive)
+  (let ((buf (get-buffer-create (or (eddie/recent-eshell)
+				    eshell-buffer-name))))
+    (cl-assert (and buf (buffer-live-p buf)))
+    (pop-to-buffer-same-window buf)
+    (unless (derived-mode-p 'eshell-mode)
+      (eshell-mode))
+    buf))
+
+(defun eddie/eshell-new ()
+  (interactive)
+  (eshell 'N))
+
+;; (defun eddie/eshell-recent-or-new-cur-dir ()
+;;   (interactive))
+
+;; (defun eddie/eshell-new-cur-dir ()
+;;   (interactive))
+
 ;; quick access
-(global-set-key (kbd "C-c e") 'eshell)
-(global-set-key (kbd "C-c E") 'eddie/eshell-for-current-dir)
+(global-set-key (kbd "C-c e e") 'eddie/eshell-recent-or-new)
+(global-set-key (kbd "C-c e E") 'eddie/eshell-new)
+;; (global-set-key (kbd "C-c e d") 'eddie/eshell-recent-or-new-cur-dir)
+;; (global-set-key (kbd "C-c e D") 'eddie/eshell-new-cur-dir)
+
 
 (setq eshell-visual-subcommands '())
 
@@ -973,16 +1039,17 @@ directory to make multiple eshell windows easier."
     ;;  :file "git.png"
     ;;  :extensions ("git" "gitignore" "gitconfig"
     ;; 		  "gitmodules" "gitattributes"))
-    ;; (treemacs-create-icon
-    ;;  :file "go.png"
-    ;;  :extensions ("go"))
+    (treemacs-create-icon
+     :file "go-doc.png"
+     :extensions ("go"))
     (treemacs-create-icon
      :file "markup.png"
      :extensions ("html" "htm"))
     (treemacs-create-icon
      :file "image.png"
      :extensions ("jpg" "jpeg" "bmp" "svg" "png"
-		  "xpm" "gif"))
+		  "xpm" "gif" "tiff" "tga" "heic"
+		  "heif"))
     ;; (treemacs-create-icon
     ;;  :file "jar.png"
     ;;  :extensions ("jar"))
@@ -1013,9 +1080,9 @@ directory to make multiple eshell windows easier."
     ;; (treemacs-create-icon
     ;;  :file "lua.png"
     ;;  :extensions ("lua"))
-    ;; (treemacs-create-icon
-    ;;  :file "make.png"
-    ;;  :extensions ("makefile"))
+    (treemacs-create-icon
+     :file "makefile.png"
+     :extensions ("makefile"))
     ;; (treemacs-create-icon
     ;;  :file "manifest.png"
     ;;  :extensions ("manifest"))
@@ -1134,6 +1201,11 @@ directory to make multiple eshell windows easier."
 
 (treemacs-load-theme "Normal")
 
+(require 'treemacs-icons-dired)
+
+;; don't underline non-breaking space
+(set-face-attribute 'nobreak-space nil
+		    :underline nil)
 
 ;;; Stuff for speaking on OS X.
 (defun speak (str)
@@ -1464,12 +1536,6 @@ of text."
 (add-to-list 'auto-mode-alist '("\\.pbcompspec$" . plist-mode))
 (add-to-list 'auto-mode-alist '("\\.xcspec$" . plist-mode))
 
-;; exec-path-from-shel
-;; Emacs library to ensure environment variables inside Emacs look the
-;; same as in the user's shell.
-(when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize))
-
 ;;; Frequent files
 
 ;; Open Emacs init file
@@ -1588,6 +1654,7 @@ of text."
 		  (visual-line-mode 1)))
 
 (use-package fill-column-indicator)
+(setq fci-rule-color "#6F6F6F")
 
 
 ;; Email & name

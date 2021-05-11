@@ -32,13 +32,11 @@
 (if window-system
     (set-fontset-font "fontset-default" 'unicode "Apple Color Emoji" nil 'prepend))
 
-;(add-hook 'after-init-hook #'global-emojify-mode)
-
-;;(setq-default frame-title-format '("%f"))
-
 (setq-default frame-title-format
-          '(buffer-file-name "%f"
-            (dired-directory dired-directory "%b")))
+	      '(buffer-file-name "%f"
+                (dired-directory dired-directory "%b")))
+;; icon-title-format
+
 
 ; Set the font
 ;; (set-frame-font "DejaVu Sans Mono 15")
@@ -731,15 +729,21 @@ directory to make multiple eshell windows easier."
 
 
 (setq eshell-visual-subcommands '())
+(setq eshell-visual-options '())
 
 ;;(add-to-list 'eshell-visual-commands "brew")
 (add-to-list 'eshell-visual-subcommands '("brew" "install"))
-;;(add-to-list 'eshell-visual-options '("git" "log" "--option"))
+(add-to-list 'eshell-visual-options '("curl" "-O"))
 
 ;; remove first
 ;; (setq eshell-visual-commands
 ;;       (cdr eshell-visual-commands))
 
+;; Tramp - vagrant
+
+(use-package vagrant-tramp
+  :after dash
+  :load-path "~/site-lisp/vagrant-tramp")
 
 ; suppress the follow warning
 ;   ls does not support --dired; see `dired-use-ls-dired' for more details.

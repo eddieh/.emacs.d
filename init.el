@@ -602,6 +602,14 @@
             (setq indent-tabs-mode t)
             (setq tab-width 8)))
 
+;; with-editor to use the current editor as $EDITOR
+(use-package with-editor
+  :ensure t
+  :init
+  (progn
+    (add-hook 'shell-mode-hook  'with-editor-export-editor)
+    (add-hook 'eshell-mode-hook 'with-editor-export-editor)))
+
 ;;; eshell
 
 (require 'eshell)
@@ -733,6 +741,7 @@ directory to make multiple eshell windows easier."
 
 ;;(add-to-list 'eshell-visual-commands "brew")
 (add-to-list 'eshell-visual-subcommands '("brew" "install"))
+(add-to-list 'eshell-visual-subcommands '("git" "diff" "log"))
 (add-to-list 'eshell-visual-options '("curl" "-O"))
 
 ;; remove first

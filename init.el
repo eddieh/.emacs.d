@@ -11,6 +11,7 @@
 
 ;; Kill the splash screen (death to all splash screens)
 (setq inhibit-splash-screen t)
+;;(defun use-fancy-splash-screens-p() nil)
 
 ; Never use the menu in a terminal
 (unless window-system
@@ -408,6 +409,10 @@
 (define-abbrev org-mode-abbrev-table "di" "" 'eddie/org-doc-info)
 
 (add-hook 'org-mode-hook (lambda () (auto-fill-mode)))
+;; disable stupid outline style indentation
+(setq org-adapt-indentation nil)
+(setq org-src-preserve-indentation nil)
+(setq org-edit-src-content-indentation 0)
 
 ;; Org babel
 ;; (require 'ob-sh)
@@ -556,6 +561,31 @@
 ;; Web mode
 (use-package web-mode)
 
+;; Polymode
+(use-package polymode
+  :ensure t
+  :pin melpa-stable)
+(use-package poly-erb
+  :ensure t
+  :after polymode
+  :pin melpa-stable)
+(use-package poly-markdown
+  :ensure t
+  :after polymode
+  :pin melpa-stable)
+(use-package poly-erb
+  :ensure t
+  :after polymode
+  :pin melpa-stable)
+(use-package poly-org
+  :ensure t
+  :after polymode
+  :pin melpa-stable)
+(use-package poly-ruby
+  :ensure t
+  :after polymode
+  :pin melpa-stable)
+
 ;; Swift mode config
 (use-package swift-mode)
 
@@ -573,6 +603,15 @@
 
 ;; CMake mode config
 (use-package cmake-mode)
+
+;;(add-to-list 'auto-mode-alist '("meson.build$" . python-mode))
+(use-package meson-mode)
+
+(use-package ninja-mode)
+
+;; use makefile-mode for files named Makefile.something
+(add-to-list 'auto-mode-alist '("Makefile.*$" . makefile-mode))
+;(setq auto-mode-alist (cdr auto-mode-alist))
 
 ;; gitignroe mode config
 (use-package gitignore-mode)
@@ -744,6 +783,8 @@ directory to make multiple eshell windows easier."
 (add-to-list 'eshell-visual-subcommands '("git" "diff" "log"))
 (add-to-list 'eshell-visual-options '("curl" "-O"))
 
+(setq eshell-visual-subcommands nil)
+
 ;; remove first
 ;; (setq eshell-visual-commands
 ;;       (cdr eshell-visual-commands))
@@ -753,6 +794,10 @@ directory to make multiple eshell windows easier."
 (use-package vagrant-tramp
   :after dash
   :load-path "~/site-lisp/vagrant-tramp")
+
+;;; pkgmgr selectfile-mode
+(use-package selectfile-mode
+     :load-path "~/pm/pkgmgr/tools/emacs")
 
 ; suppress the follow warning
 ;   ls does not support --dired; see `dired-use-ls-dired' for more details.
@@ -838,17 +883,17 @@ directory to make multiple eshell windows easier."
 	  (lambda ()
 	    (setq-local company-backends '(company-capf))))
 
-(add-hook 'c-mode-hook (lambda () (lsp)))
-(add-hook 'objc-mode-hook (lambda () (lsp)))
-(add-hook 'swift-mode-hook (lambda () (lsp)))
+;; (add-hook 'c-mode-hook (lambda () (lsp)))
+;; (add-hook 'objc-mode-hook (lambda () (lsp)))
+;; (add-hook 'swift-mode-hook (lambda () (lsp)))
 
 ;; Ruby LSP
 ;;(setq lsp-solargraph-diagnostics nil)
-(add-hook 'ruby-mode-hook #'lsp)
+;;(add-hook 'ruby-mode-hook #'lsp)
 
 ;; Go LSP
 ;;(setq lsp-clients-go-diagnostics-enabled nil)
-(add-hook 'go-mode-hook #'lsp)
+;;(add-hook 'go-mode-hook #'lsp)
 
 ;;(lsp-diagnostics-mode -1)
 
@@ -936,9 +981,9 @@ directory to make multiple eshell windows easier."
   :ensure t
   :config (treemacs-icons-dired-mode))
 
-(use-package treemacs-magit
-  :after (treemacs magit)
-  :ensure t)
+;; (use-package treemacs-magit
+;;   :after (treemacs magit)
+;;   :ensure t)
 
 (require 'treemacs-themes)
 (require 'treemacs-icons)
@@ -1219,6 +1264,18 @@ directory to make multiple eshell windows easier."
 ;; don't underline non-breaking space
 (set-face-attribute 'nobreak-space nil
 		    :underline nil)
+
+;; Increment number under point (cursor)
+;; https://www.emacswiki.org/emacs/IncrementNumber
+(defun increment-number-at-point ()
+  (interactive)
+  (skip-chars-backward "0-9")
+  (or (looking-at "[0-9]+")
+      (error "No number at point"))
+  (replace-match (number-to-string
+		  (1+ (string-to-number (match-string 0))))))
+
+(global-set-key (kbd "C-c +") 'increment-number-at-point)
 
 ;;; Stuff for speaking on OS X.
 (defun speak (str)
@@ -1520,7 +1577,11 @@ command."
   (interactive)
   (define-word--internal (thing-at-point 'word)))
 
-(global-set-key (kbd "M-#") 'define-word)
+;;(global-set-key (kbd "M-#") 'define-word)
+
+(use-package osx-dictionary
+  :config
+  (global-set-key (kbd "M-#") 'osx-dictionary-search-word-at-point))
 
 
 ;;;  Pargraphs

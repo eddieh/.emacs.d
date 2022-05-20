@@ -541,6 +541,21 @@
 (setq auto-mode-alist (cons '("/JavaScriptCore/.*\\.[ch|cpp]*$" . webkit-c++-mode)
                             auto-mode-alist))
 
+
+(defun discombobulated-c-mode ()
+  "C mode for some darwin kernel projects, system projects and
+cctools, etc. that can not pick either tabs or spaces."
+  (interactive)
+  (c-mode)
+  (c-set-style "linux")
+  (setq tab-width 8)
+  (setq indent-tabs-mode t)
+  (setq c-basic-offset 8)
+  (electric-indent-mode 0))
+
+(setq auto-mode-alist (cons '("/cctools/.*\\.[ch]*$" . discombobulated-c-mode)
+			    auto-mode-alist))
+
 ;; JS Modules
 (add-to-list 'auto-mode-alist '("\\.mjs\\'" . js-mode))
 

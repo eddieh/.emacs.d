@@ -49,7 +49,7 @@
       `((vertical-scroll-bars)
         (right-fringe . 0)
         (left-fringe . 0)
-        (font . ,(if (eq system-type 'windows-nt)
+        (font . ,(if (memq system-type '(gnu/linux windows-nt))
 		     "DejaVuSansMono Nerd Font Book 11"
 		   "DejaVuSansMono Nerd Font Book 15"))
                      ;;"DejaVu Sans Mono Book 11"

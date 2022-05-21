@@ -68,66 +68,6 @@
 ;; (setq header-line-format nil)
 ;; (setq mode-line-format nil)
 
-;; (use-package simple-modeline
-;;   :hook (after-init . simple-modeline-mode))
-
-(use-package mood-line
-  :hook (after-init . mood-line-mode))
-
-;; Path config
-(message "Loading Eddie's configuration paths…")
-
-;; Looks like we don't need exec-path-from-shell with Yamamoto
-;; Mitsuharu's Mac port of GNU Emacs
-
-;; Ensure environment variables from the shell are in sync with Emacs
-;;(use-package exec-path-from-shell)
-
-;; exec-path-from-shel
-;; Emacs library to ensure environment variables inside Emacs look the
-;; same as in the user's shell.
-;;(when (memq window-system '(mac ns x))
-;;  (exec-path-from-shell-initialize))
-
-;; Don't need to manually set the path since we get it from the shell
-;; (see above exec-path-from-shell).
-;; (setenv "PATH"
-;;         (concat (getenv "PATH")
-;; 		":/Library/TeX/texbin"
-;;                 ":/opt/local/bin"
-;;                 ":/opt/local/sbin"
-;; 		":/usr/local/bin"
-;;                 ":/Users/eddie/bin"))
-
-(defconst eddie/default-emacs-dir "~/.emacs.d/"
-  "My default emacs director.")
-
-(add-to-list 'load-path "~/site-lisp/plist-mode")
-(add-to-list 'load-path "~/.emacs.d/site-lisp")
-;;(add-to-list 'load-path "/opt/local/share/emacs/site-lisp")
-(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e/")
-
-;;(setq exec-path (append exec-path '("/Library/TeX/texbin")))
-;;(setq exec-path (append exec-path '("/opt/local/bin")))
-;;(setq exec-path (append exec-path '("/usr/local/bin")))
-
-;(setenv "DICTIONARY" "en_US")
-;; (setq ispell-program-name "hunspell")
-;; (setq ispell-really-hunspell t)
-(setq ispell-program-name "aspell")
-
-(defun string-from-file (path)
-  "Get the content of the file at PATH as a string"
-  (with-temp-buffer
-    (insert-file-contents path)
-    (buffer-string)))
-
-(defun eddie/html-style-tag-with-file (file)
-  (concat
-   "<style>"
-   (string-from-file (concat eddie/default-emacs-dir file))
-   "</style>"))
-
 ;; keep customization in a separate file
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file 'noerror)
@@ -161,6 +101,46 @@
 (require 'use-package)
 (setq use-package-verbose t) ;; make it easy to debug
 (setq use-package-always-ensure t) ;; install packages on-demand
+
+;; Path config
+(message "Loading Eddie's configuration paths…")
+
+;; Looks like we don't need exec-path-from-shell with Yamamoto
+;; Mitsuharu's Mac port of GNU Emacs
+
+;; Ensure environment variables from the shell are in sync with Emacs
+;;(use-package exec-path-from-shell)
+
+;; exec-path-from-shel
+;; Emacs library to ensure environment variables inside Emacs look the
+;; same as in the user's shell.
+;;(when (memq window-system '(mac ns x))
+;;  (exec-path-from-shell-initialize))
+
+;; Don't need to manually set the path since we get it from the shell
+;; (see above exec-path-from-shell).
+;; (setenv "PATH"
+;;         (concat (getenv "PATH")
+;; 		":/Library/TeX/texbin"
+;;                 ":/opt/local/bin"
+;;                 ":/opt/local/sbin"
+;; 		":/usr/local/bin"
+;;                 ":/Users/eddie/bin"))
+
+(defconst eddie/default-emacs-dir "~/.emacs.d/"
+  "My default emacs director.")
+
+(add-to-list 'load-path "~/.emacs.d/site-lisp")
+(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e/")
+
+;;(setq exec-path (append exec-path '("/Library/TeX/texbin")))
+;;(setq exec-path (append exec-path '("/opt/local/bin")))
+;;(setq exec-path (append exec-path '("/usr/local/bin")))
+
+;(setenv "DICTIONARY" "en_US")
+;; (setq ispell-program-name "hunspell")
+;; (setq ispell-really-hunspell t)
+(setq ispell-program-name "aspell")
 
 (require 'subr-x)
 (setq eddie/xcode-developer-dir
@@ -196,6 +176,12 @@
   (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
   :config
   (load-theme 'zenburn t))
+
+;; (use-package simple-modeline
+;;   :hook (after-init . simple-modeline-mode))
+
+(use-package mood-line
+  :hook (after-init . mood-line-mode))
 
 (use-package rainbow-mode)
 
@@ -276,6 +262,18 @@
 (use-package htmlize)
 
 ;;; Org mode
+
+(defun string-from-file (path)
+  "Get the content of the file at PATH as a string"
+  (with-temp-buffer
+    (insert-file-contents path)
+    (buffer-string)))
+
+(defun eddie/html-style-tag-with-file (file)
+  (concat
+   "<style>"
+   (string-from-file (concat eddie/default-emacs-dir file))
+   "</style>"))
 
 (require 'org-tempo)
 
@@ -467,7 +465,7 @@
 (setq-default indent-tabs-mode nil)
 
 (use-package lorem-ipsum
-  :load-path "~/src/emacs-lorem-ipsum"
+  :load-path "~/elisp/emacs-lorem-ipsum"
   :config
   (global-set-key (kbd "C-c C-l s") 'lorem-ipsum-insert-sentences)
   (global-set-key (kbd "C-c C-l p") 'lorem-ipsum-insert-paragraphs)
@@ -803,12 +801,6 @@ directory to make multiple eshell windows easier."
 ;; remove first
 ;; (setq eshell-visual-commands
 ;;       (cdr eshell-visual-commands))
-
-;; Tramp - vagrant
-
-(use-package vagrant-tramp
-  :after dash
-  :load-path "~/site-lisp/vagrant-tramp")
 
 ;;; pkgmgr selectfile-mode
 (use-package selectfile-mode
@@ -1620,10 +1612,12 @@ of text."
 (setq sentence-end-double-space nil)
 
 
-(require 'plist-mode)
-(add-to-list 'auto-mode-alist '("\\.pbfilespec$" . plist-mode))
-(add-to-list 'auto-mode-alist '("\\.pbcompspec$" . plist-mode))
-(add-to-list 'auto-mode-alist '("\\.xcspec$" . plist-mode))
+(use-package plist-mode
+  :load-path "~/elisp/plist-mode"
+  :config
+  (add-to-list 'auto-mode-alist '("\\.pbfilespec$" . plist-mode))
+  (add-to-list 'auto-mode-alist '("\\.pbcompspec$" . plist-mode))
+  (add-to-list 'auto-mode-alist '("\\.xcspec$" . plist-mode)))
 
 ;;; Frequent files
 

@@ -145,10 +145,28 @@
 (require 'subr-x)
 (setq eddie/xcode-developer-dir
       (string-trim (shell-command-to-string "xcode-select -p")))
+(setq eddie/xcode-sdk-headers-dir
+      (concat eddie/xcode-developer-dir
+	      "/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include"))
+(setq eddie/xcode-sdk-frameworks-dir
+      (concat eddie/xcode-developer-dir
+      "/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"))
 
-;; (find-file eddie/xcode-developer-dir)
-;; (setq eddie/xcode-sdk-headers-dir "")
+(defun eddie/find-xcode-developer-dir ()
+  (interactive)
+  (find-file eddie/xcode-developer-dir))
 
+(defun eddie/find-xcode-sdk-headers-dir ()
+  (interactive)
+  (find-file eddie/xcode-sdk-headers-dir))
+
+(defun eddie/find-xcode-sdk-frameworks-dir ()
+  (interactive)
+  (find-file eddie/xcode-sdk-frameworks-dir))
+
+(global-set-key (kbd "C-c x d") 'eddie/find-xcode-developer-dir)
+(global-set-key (kbd "C-c x i") 'eddie/find-xcode-sdk-headers-dir)
+(global-set-key (kbd "C-c x f") 'eddie/find-xcode-sdk-frameworks-dir)
 
 ;; Theme config
 (message "Loading Eddie's configuration theme…")
@@ -448,6 +466,8 @@
 
 (setq org-ditaa-jar-path "/usr/local/Cellar/ditaa/0.11.0/libexec/ditaa-0.11.0-standalone.jar")
 
+(setq org-babel-python-command "python3")
+
 (use-package ox-hugo
   :ensure t
   :after ox)
@@ -459,6 +479,47 @@
   :after ox)
 
 (require 'ox-json)
+
+(use-package ox-groff
+  :load-path "~/elisp/org-contrib/lisp")
+
+(require 'ox-latex)
+(setq org-latex-default-packages-alist
+  '(("AUTO" "inputenc"  t ("pdflatex"))
+    ("T1"   "fontenc"   t ("pdflatex"))
+    (""     "graphicx"  t)
+    (""     "longtable" nil)
+    (""     "wrapfig"   nil)
+    (""     "rotating"  nil)
+    ("normalem" "ulem"  t)
+    (""     "amsmath"   t)
+    (""     "amssymb"   t)
+    (""     "capt-of"   nil)
+    ("hidelinks"     "hyperref"  nil)))
+
+(add-to-list 'org-latex-packages-alist '("" "listings"))
+(add-to-list 'org-latex-packages-alist '("" "color"))
+;; (setq org-latex-listings t)
+(setq org-latex-listings-options
+    '(("basicstyle" "\\tiny")
+      ("keywordstyle" "\\color{black}\\bfseries")
+      ("showstringspaces" "false")))
+
+(setq org-latex-listings 'minted)
+(add-to-list 'org-latex-packages-alist '("newfloat" "minted"))
+(setq org-latex-minted-options
+      '(("fontsize" "\\small")
+	("frame" "leftline")))
+
+(setq org-latex-pdf-process
+      '("latexmk -pdflatex=\"pdflatex  --shell-escape\" -f -pdf -interaction=nonstopmode -output-directory=%o %f"))
+
+(add-to-list 'org-latex-classes '("memoir"
+     "\\documentclass[12pt]{memoir}"
+     ("\\chapter{%s}" . "\\chapter*{%s}")
+     ("\\section{%s}" . "\\section*{%s}")
+     ("\\subsection{%s}" . "\\subsection*{%s}")
+     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
 
 ;; default indent style
 (setq tab-width 4)
@@ -554,14 +615,98 @@ cctools, etc. that can not pick either tabs or spaces."
 (setq auto-mode-alist (cons '("/cctools/.*\\.[ch]*$" . discombobulated-c-mode)
 			    auto-mode-alist))
 
+
+(defconst align-this-c-style
+  '((c-offsets-alist . ((arglist-cont-nonempty . +)
+			(arglist-close . 0))))
+  "C style that performs no 'smart' alignment.")
+(c-add-style "Align this." align-this-c-style)
+(defun align-this-c-mode ()
+  "C mode that turns off all 'smart' alignment. Say 'align this'
+like Trinity says 'Dodge this.'"
+  (interactive)
+  (c-mode)
+  (c-set-style "Align this.")
+  (setq tab-width 4
+	indent-tabs-mode nil
+	c-basic-offset 4))
+
+
 ;; JS Modules
 (add-to-list 'auto-mode-alist '("\\.mjs\\'" . js-mode))
 
 ;; ActionScript
 (add-to-list 'auto-mode-alist '("\\.as\\'" . actionscript-mode))
 
+;; https://www.gnu.org/software/emacs/manual/html_mono/ccmode.html#Objective_002dC-Method-Symbols
+
+(defun eddie/c-lineup-ObjC-method-call-not-stupid (langelem)
+  "Simple +1 c-basic-offset indention from the start of the
+statements indention. The anti-Xcode & anti-Elisp style.
+
+    value = [NSSomeClass someObjectWithString:@\"arg1\"
+        secondString:@\"arg2\"
+        thridObject:NULL
+    ];
+            ^
+            |__________ anchor pos [12]
+        ^
+        |______________ target column (start of stm + c-basic-offset) [8]
+    ^
+    |__________________ start of statement indention [4]
+
+
+    ret = desired offset realative to anchor
+    anchor = anchor pos
+    stm-indent = start of statement indention
+
+    ret = stm-indent + c-basic-offset - anchor
+
+Works with: objc-method-call-cont."
+  (save-excursion
+    (back-to-indentation)
+    (let* ((anchor (c-langelem-pos langelem))
+	   (paren-state (c-parse-state))
+	   (containing-sexp (c-most-enclosing-brace paren-state))
+	   (stm-indent (progn
+			 (goto-char containing-sexp)
+			 (setq placeholder (c-point 'boi))
+			 (if (and (c-safe (backward-up-list 1) t)
+				  (>= (point) placeholder))
+			     (progn
+			       (forward-char)
+			       (skip-chars-forward " \t"))
+			   (goto-char placeholder))
+			 (point))))
+      (- (+ stm-indent c-basic-offset) anchor))))
+
+(defconst not-stupid-objc-style
+  '((c-offsets-alist . ((objc-method-call-cont
+			 .
+			 eddie/c-lineup-ObjC-method-call-not-stupid)
+			(arglist-close . 0)
+			(objc-method-args-cont . +))))
+    "Objective-C style that is not stupid!")
+
+(c-add-style "Objective-C" not-stupid-objc-style)
+
+(defun not-stupid-objc-mode ()
+  (interactive)
+  (font-lock-add-keywords
+   'objc-mode
+   '(("@property" . font-lock-keyword-face)
+     ("@available" . font-lock-keyword-face)
+     ("@autoreleasepool" . font-lock-keyword-face)
+     ("instancetype" . font-lock-type-face)))
+  (objc-mode)
+  (c-set-style "Objective-C")
+  (c-toggle-comment-style 1)
+  (setq tab-width 4
+	indent-tabs-mode nil))
+
 ;; Obj-C, Objective-C, objc, Cocoa
-(add-to-list 'auto-mode-alist '("\\.mm\\'" . objc-mode))
+(add-to-list 'auto-mode-alist '("\\.m$" . not-stupid-objc-mode))
+(add-to-list 'auto-mode-alist '("\\.mm$" . not-stupid-objc-mode))
 
 (defun eddie/objc-headerp ()
   (and buffer-file-name
@@ -569,7 +714,7 @@ cctools, etc. that can not pick either tabs or spaces."
        (re-search-forward "@\\<interface\\>"
 			  magic-mode-regexp-match-limit t)))
 
-(add-to-list 'magic-mode-alist '(eddie/objc-headerp . objc-mode))
+(add-to-list 'magic-mode-alist '(eddie/objc-headerp . not-stupid-objc-mode))
 
 ;; Web mode
 (use-package web-mode)
@@ -590,10 +735,10 @@ cctools, etc. that can not pick either tabs or spaces."
   :ensure t
   :after polymode
   :pin melpa-stable)
-(use-package poly-org
-  :ensure t
-  :after polymode
-  :pin melpa-stable)
+;; (use-package poly-org
+;;   :ensure t
+;;   :after polymode
+;;   :pin melpa-stable)
 (use-package poly-ruby
   :ensure t
   :after polymode
@@ -628,6 +773,7 @@ cctools, etc. that can not pick either tabs or spaces."
 
 ;; gitignroe mode and others
 (use-package git-modes)
+(use-package gitignore-templates)
 
 (use-package yaml-mode)
 (use-package dockerfile-mode)
@@ -653,6 +799,13 @@ cctools, etc. that can not pick either tabs or spaces."
           (lambda ()
             (setq indent-tabs-mode t)
             (setq tab-width 8)))
+
+;; SLIME
+(use-package slime
+  :ensure t
+  :pin melpa-stable
+  :config
+  (setq inferior-lisp-program "~/src/ccl-dev/dx86cl64"))
 
 ;; with-editor to use the current editor as $EDITOR
 (use-package with-editor
@@ -879,20 +1032,19 @@ directory to make multiple eshell windows easier."
   (setq gc-cons-threshold 100000000)
   (setq lsp-clients-clangd-executable "/usr/local/opt/llvm/bin/clangd"))
 
-
 (use-package lsp-sourcekit
   :if (memq window-system '(mac ns))
   :after lsp-mode
   :load-path "~/src/lsp-sourcekit"
   :config
-  (setq lsp-sourcekit-executable "/Applications/Xcode11.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp"))
+  (setq lsp-sourcekit-executable "/Applications/Xcode12.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp"))
 
 (add-hook 'lsp-managed-mode-hook
 	  (lambda ()
 	    (setq-local company-backends '(company-capf))))
 
-;; (add-hook 'c-mode-hook (lambda () (lsp)))
-;; (add-hook 'objc-mode-hook (lambda () (lsp)))
+(add-hook 'c-mode-hook (lambda () (lsp)))
+(add-hook 'objc-mode-hook (lambda () (lsp)))
 ;; (add-hook 'swift-mode-hook (lambda () (lsp)))
 
 ;; Ruby LSP
@@ -1253,13 +1405,19 @@ of text."
 ;; double-space. Not on my watch!
 (setq sentence-end-double-space nil)
 
-
+;; Plist Mode
 (use-package plist-mode
   :load-path "~/elisp/plist-mode"
   :config
   (add-to-list 'auto-mode-alist '("\\.pbfilespec$" . plist-mode))
   (add-to-list 'auto-mode-alist '("\\.pbcompspec$" . plist-mode))
   (add-to-list 'auto-mode-alist '("\\.xcspec$" . plist-mode)))
+
+;; XML mode
+(add-hook 'nxml-mode-hook
+	  (lambda ()
+	    (setq nxml-child-indent 4
+		  nxml-attribute-indent 6)))
 
 ;;; Frequent files
 
@@ -1381,6 +1539,7 @@ of text."
 (use-package fill-column-indicator)
 (setq fci-rule-color "#6F6F6F")
 
+(add-to-list 'auto-mode-alist '("\\.mbox$" . vm-mode))
 
 ;; Email & name
 

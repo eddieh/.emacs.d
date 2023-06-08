@@ -29,9 +29,9 @@
 (if window-system
     (tool-bar-mode -1))
 
-;; Enable emoji
-(if window-system
-    (set-fontset-font "fontset-default" 'unicode "Apple Color Emoji" nil 'prepend))
+;; ;; Enable emoji
+;; (if window-system
+;;     (set-fontset-font "fontset-default" 'unicode "Apple Color Emoji" nil 'prepend))
 
 (setq-default frame-title-format
 	      '(buffer-file-name "%f"
@@ -49,9 +49,11 @@
       `((vertical-scroll-bars)
         (right-fringe . 0)
         (left-fringe . 0)
-        (font . ,(if (memq system-type '(gnu/linux windows-nt))
-		     "DejaVuSansMono Nerd Font Book 11"
-		   "DejaVuSansMono Nerd Font Book 15"))
+        (font . ,(if (memq system-type '(bsd gnu/linux windows-nt))
+		     "DejaVuSansMono Nerd Font 11"
+		   "DejaVuSansMono Nerd Font 15"))
+		   ;;   "DejaVuSansMono Nerd Font Book 11"
+		   ;; "DejaVuSansMono Nerd Font Book 15"))
                      ;;"DejaVu Sans Mono Book 11"
                    ;;"DejaVu Sans Mono Book 15"))
         ;; (menu-bar-lines . 0) ;; causes the menu-bar in MacOS X to
@@ -78,9 +80,9 @@
 (require 'package)
 ;; (setq package-enable-at-startup nil)
 (add-to-list 'package-archives
-             '("melpa-stable" . "http://stable.melpa.org/packages/") t)
+             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (add-to-list 'package-archives
-             '("elpa" . "http://tromey.com/elpa/"))
+             '("elpa" . "https://tromey.com/elpa/"))
 ;; (add-to-list 'package-archives
 ;;              '("melpa" . "http://melpa.org/packages/"))
 
@@ -150,7 +152,13 @@
 	      "/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include"))
 (setq eddie/xcode-sdk-frameworks-dir
       (concat eddie/xcode-developer-dir
-      "/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"))
+	      "/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"))
+(setq eddie/xcode-toolchain-dir
+      (concat eddie/xcode-developer-dir
+	      "/Toolchains/XcodeDefault.xctoolchain"))
+(setq eddie/xcode-toolchain-clangd
+      (concat eddie/xcode-toolchain-dir
+	      "/usr/bin/clangd"))
 
 (defun eddie/find-xcode-developer-dir ()
   (interactive)
@@ -504,6 +512,7 @@
     '(("basicstyle" "\\tiny")
       ("keywordstyle" "\\color{black}\\bfseries")
       ("showstringspaces" "false")))
+(add-to-list 'org-latex-listings-langs '(org "Org"))
 
 (setq org-latex-listings 'minted)
 (add-to-list 'org-latex-packages-alist '("newfloat" "minted"))
@@ -512,7 +521,44 @@
 	("frame" "leftline")))
 
 (setq org-latex-pdf-process
-      '("latexmk -pdflatex=\"pdflatex  --shell-escape\" -f -pdf -interaction=nonstopmode -output-directory=%o %f"))
+  (if (executable-find "latexmk")
+      '("latexmk -f -pdflua -%latex=\"lualatex --shell-escape\" -interaction=nonstopmode -output-directory=%o %f")
+    '("%latex -interaction nonstopmode -output-directory %o %f"
+      "%latex -interaction nonstopmode -output-directory %o %f"
+      "%latex -interaction nonstopmode -output-directory %o %f")))
+
+(defun eddie/org-latex-format-headline-function
+    (todo _todo-type priority text tags _info)
+  "Make TODO style headlines standout, otherwise this is the same
+as the default. See `org-latex-format-headline-function' for
+details."
+  (concat
+   (and todo
+	(format
+	 "\\texorpdfstring{\\bfseries%s }{}{ %s }"
+	 (pcase _todo-type
+	   ('todo "\\BTTodoColor\\HollowBox")
+	   ('done "\\BTDoneColor\\Checkedbox"))
+	 (pcase _todo-type ('todo "☐") ('done "☑︎"))))
+   (and priority (format "\\framebox{\\#%c} " priority))
+   text
+   (and tags
+	(format "\\hfill{}\\textsc{%s}"
+		(mapconcat #'org-latex--protect-text tags ":")))))
+
+(setq org-latex-format-headline-function
+      'eddie/org-latex-format-headline-function)
+
+
+;; (setq org-latex-pdf-process
+;;       '("latexmk -lualatex=\"lualatex --shell-escape\" -f -pdf -interaction=nonstopmode -output-directory=%o %f"))
+
+;; (setq org-latex-pdf-process
+;;       (lambda (x)
+;; 	(if (executable-find "latexmk")
+;; 	    '("latexmk -lualatex=\"lualatex --shell-escape\" -f -pdf -interaction=nonstopmode -output-directory=%o %f")
+;; 	  '("lualatex"))))
+
 
 (add-to-list 'org-latex-classes '("memoir"
      "\\documentclass[12pt]{memoir}"
@@ -520,6 +566,8 @@
      ("\\section{%s}" . "\\section*{%s}")
      ("\\subsection{%s}" . "\\subsection*{%s}")
      ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+
+(setq org-latex-remove-logfiles nil)
 
 ;; default indent style
 (setq tab-width 4)
@@ -638,6 +686,11 @@ like Trinity says 'Dodge this.'"
 ;; ActionScript
 (add-to-list 'auto-mode-alist '("\\.as\\'" . actionscript-mode))
 
+;; Pascal
+(add-to-list 'auto-mode-alist '("\\.pp$" . opascal-mode))
+
+(use-package ada-mode)
+
 ;; https://www.gnu.org/software/emacs/manual/html_mono/ccmode.html#Objective_002dC-Method-Symbols
 
 (defun eddie/c-lineup-ObjC-method-call-not-stupid (langelem)
@@ -680,10 +733,14 @@ Works with: objc-method-call-cont."
 			 (point))))
       (- (+ stm-indent c-basic-offset) anchor))))
 
+(defun eddie/c-lineup-ObjC-arglist (langelem)
+  "Line up block arguments.")
+
 (defconst not-stupid-objc-style
   '((c-offsets-alist . ((objc-method-call-cont
 			 .
 			 eddie/c-lineup-ObjC-method-call-not-stupid)
+			(arglist-cont-nonempty . +)
 			(arglist-close . 0)
 			(objc-method-args-cont . +))))
     "Objective-C style that is not stupid!")
@@ -697,7 +754,11 @@ Works with: objc-method-call-cont."
    '(("@property" . font-lock-keyword-face)
      ("@available" . font-lock-keyword-face)
      ("@autoreleasepool" . font-lock-keyword-face)
-     ("instancetype" . font-lock-type-face)))
+     ;; ("@optional" . font-lock-builtin-face)
+     ;; ("@required" . font-lock-builtin-face)
+     ("instancetype" . font-lock-type-face)
+     ("__weak" . font-lock-type-face)
+     ("__strong" . font-lock-type-face)))
   (objc-mode)
   (c-set-style "Objective-C")
   (c-toggle-comment-style 1)
@@ -1009,7 +1070,8 @@ directory to make multiple eshell windows easier."
 
   ;; turn off auto-complete
   (setq company-idle-delay nil)
-  (global-set-key (kbd "<tab>") 'tab-indent-or-complete)
+  ;;(global-set-key (kbd "<tab>") 'tab-indent-or-complete)
+  (global-set-key (kbd "C-/") 'company-complete)
 
   :bind (:map company-active-map
 	      ("C-p" . company-select-previous)
@@ -1019,48 +1081,18 @@ directory to make multiple eshell windows easier."
 
 (add-hook 'after-init-hook 'global-company-mode)
 
-;;; Language Server Protocol (LSP) mode
-
-(use-package lsp-mode
+(use-package eglot
   :config
-  (setq lsp-enable-snippet t)
+  (add-to-list 'eglot-server-programs
+	       '(c-mode .
+			("/Applications/Xcode12.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clangd")))
+  (add-to-list 'eglot-stay-out-of "flymake")
+  (add-to-list 'eglot-stay-out-of "eldoc"))
 
-  (setq lsp-enable-text-document-color nil)
-  (setq lsp-log-io t)
+(use-package realgud)
+(use-package realgud-lldb)
+(use-package dap-mode)
 
-  (setq read-process-output-max (* 1024 1024))
-  (setq gc-cons-threshold 100000000)
-  (setq lsp-clients-clangd-executable "/usr/local/opt/llvm/bin/clangd"))
-
-(use-package lsp-sourcekit
-  :if (memq window-system '(mac ns))
-  :after lsp-mode
-  :load-path "~/src/lsp-sourcekit"
-  :config
-  (setq lsp-sourcekit-executable "/Applications/Xcode12.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp"))
-
-(add-hook 'lsp-managed-mode-hook
-	  (lambda ()
-	    (setq-local company-backends '(company-capf))))
-
-(add-hook 'c-mode-hook (lambda () (lsp)))
-(add-hook 'objc-mode-hook (lambda () (lsp)))
-;; (add-hook 'swift-mode-hook (lambda () (lsp)))
-
-;; Ruby LSP
-;;(setq lsp-solargraph-diagnostics nil)
-;;(add-hook 'ruby-mode-hook #'lsp)
-
-;; Go LSP
-;;(setq lsp-clients-go-diagnostics-enabled nil)
-;;(add-hook 'go-mode-hook #'lsp)
-
-;;(lsp-diagnostics-mode -1)
-
-;; Disable diagnostics globally
-;; comming soon? lsp-diagnostics-disabled-modes
-(setq lsp-diagnostics-provider :none)
-(setq lsp-modeline-diagnostics-enable nil)
 
 ;; don't underline non-breaking space
 (set-face-attribute 'nobreak-space nil

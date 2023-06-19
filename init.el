@@ -49,7 +49,7 @@
       `((vertical-scroll-bars)
         (right-fringe . 0)
         (left-fringe . 0)
-        (font . ,(if (memq system-type '(bsd gnu/linux windows-nt))
+        (font . ,(if (memq system-type '(berkeley-unix gnu/linux windows-nt))
 		     "DejaVuSansMono Nerd Font 11"
 		   "DejaVuSansMono Nerd Font 15"))
 		   ;;   "DejaVuSansMono Nerd Font Book 11"
@@ -60,6 +60,9 @@
         ;; disappear
         (tool-bar-lines . 0)
         (width . 80)))
+	;; (height . ,(if (memq system-type '(berkeley-unix))
+	;; 	       38
+	;; 	     62))))
 
 (setq initial-frame-alist eddie/default-frame-style)
 (setq default-frame-alist eddie/default-frame-style)
@@ -230,37 +233,39 @@
 (require 'uniquify nil 'noerror)
 (setq uniquify-buffer-name-style 'forward)
 
-;; ido mode config
-(message "Loading Eddie's configuration ido…")
-
 (use-package project-explorer)
 
+;;; ido mode config
+
 ;; ido mode (vertical)
-(use-package ido-vertical-mode
-  :config
-  (ido-vertical-mode 1)
-  (setq ido-vertical-define-keys 'C-n-and-C-p-only))
+;; (use-package ido-vertical-mode
+;;   :config
+;;   (ido-vertical-mode 1)
+;;   (setq ido-vertical-define-keys 'C-n-and-C-p-only))
 
-;; ido mode
-(setq ido-enable-flex-matching t)
-(setq ido-everywhere t)
-(setq ido-default-file-method 'selected-window)
-(setq ido-default-buffer-method 'selected-window)
-; don't look for a match outside of the current directory
-(setq ido-auto-merge-work-directories-length -1)
-(ido-mode 1)
+;; ;; ido mode
+;; (setq ido-enable-flex-matching t)
+;; (setq ido-everywhere t)
+;; (setq ido-default-file-method 'selected-window)
+;; (setq ido-default-buffer-method 'selected-window)
+;; ; don't look for a match outside of the current directory
+;; (setq ido-auto-merge-work-directories-length -1)
+;; (ido-mode 1)
 
-(add-hook 'ido-setup-hook
-	  (lambda ()
-	    ;; Go straight home
-	    (define-key ido-file-completion-map
-	      (kbd "~")
-	      (lambda ()
-		(interactive)
-		(if (looking-back "/")
-		    (insert "~/")
-		  (call-interactively 'self-insert-command))))))
+;; (add-hook 'ido-setup-hook
+;; 	  (lambda ()
+;; 	    ;; Go straight home
+;; 	    (define-key ido-file-completion-map
+;; 	      (kbd "~")
+;; 	      (lambda ()
+;; 		(interactive)
+;; 		(if (looking-back "/")
+;; 		    (insert "~/")
+;; 		  (call-interactively 'self-insert-command))))))
 
+(fido-mode)
+(fido-vertical-mode)
+(setq icomplete-tidy-shadowed-file-names t)
 
 ;; Save config
 (message "Loading Eddie's configuration saving…")
@@ -489,6 +494,7 @@
 (require 'ox-json)
 
 (use-package ox-groff
+  :if (file-exists-p "~/elisp")
   :load-path "~/elisp/org-contrib/lisp")
 
 (require 'ox-latex)
@@ -574,6 +580,7 @@ details."
 (setq-default indent-tabs-mode nil)
 
 (use-package lorem-ipsum
+  :if (file-exists-p "~/elisp")
   :load-path "~/elisp/emacs-lorem-ipsum"
   :config
   (global-set-key (kbd "C-c C-l s") 'lorem-ipsum-insert-sentences)
@@ -1018,7 +1025,8 @@ directory to make multiple eshell windows easier."
 
 ;;; pkgmgr selectfile-mode
 (use-package selectfile-mode
-     :load-path "~/pm/pkgmgr/tools/emacs")
+  :if (file-exists-p "~/pm")
+  :load-path "~/pm/pkgmgr/tools/emacs")
 
 ; suppress the follow warning
 ;   ls does not support --dired; see `dired-use-ls-dired' for more details.
@@ -1439,6 +1447,7 @@ of text."
 
 ;; Plist Mode
 (use-package plist-mode
+  :if (file-exists-p "~/elisp")
   :load-path "~/elisp/plist-mode"
   :config
   (add-to-list 'auto-mode-alist '("\\.pbfilespec$" . plist-mode))
@@ -1599,43 +1608,6 @@ of text."
 ;; Quick access key
 ;; (global-set-key (kbd "C-c g") 'gnus)
 
-
-;;; mu4e
-
-(require 'mu4e)
-
-;; use mu4e for e-mail in emacs
-(setq mail-user-agent 'mu4e-user-agent)
-
-;; avoids mbsync errors such as
-;; "Maildir error: UID 26088 is beyond highest assigned UID 1672."
-(setq mu4e-change-filenames-when-moving t)
-
-;; Send mail with msmtp; these are the same that `gnus' uses.
-(setq message-send-mail-function 'message-send-mail-with-sendmail
-      sendmail-program "/usr/local/bin/msmtp")
-
-;; By default show the senders email address
-(setq mu4e-view-show-addresses t)
-
-;; Always prefere plain text
-(setq mu4e-view-html-plaintext-ratio-heuristic most-positive-fixnum)
-
-; mu4e-compose-format-flowed ?
-
-;; (setq mu4e-view-mode-hook nil)
-
-;; The following doesn't work because the hook is called before
-;; mu4e~view-message is set.
-
-;; (add-hook 'mu4e-view-mode-hook
-;;   (lambda ()
-;;     (with-current-buffer mu4e~view-buffer-name
-;;       (when (mu4e-message-has-field mu4e~view-message :body-txt)
-;; 	(progn
-;; 	  (visual-fill-column-mode 1)
-;; 	  (visual-line-mode 1))))))
-
 (defun eddie/toggle-visual-fill-column-mode ()
   "Toggle visual fill column based editing in the current
 buffer."
@@ -1648,145 +1620,185 @@ buffer."
       (visual-fill-column-mode 1)
       (visual-line-mode 1))))
 
-(define-key mu4e-view-mode-map (kbd "W")
-  'eddie/toggle-visual-fill-column-mode)
+;;; mu4e
 
-(define-key-after mu4e-view-mode-map
-  [menu-bar headers wrap-column]
-  '("Toggle wrap to fill column" . eddie/toggle-visual-fill-column-mode)
-  'wrap-lines)
+(when (require 'mu4e nil 'noerror)
 
-(defun eddie/mu4e-search-for-sender (msg)
-  "Search for messages sent by the sender of the message at point."
-  (mu4e-headers-search
-    (concat "from:" (cdar (mu4e-message-field msg :from)))))
+  ;; use mu4e for e-mail in emacs
+  (setq mail-user-agent 'mu4e-user-agent)
 
-;; define 'x' as the shortcut
-(add-to-list 'mu4e-view-actions
-    '("xsearch for sender" . eddie/mu4e-search-for-sender) t)
+  ;; avoids mbsync errors such as
+  ;; "Maildir error: UID 26088 is beyond highest assigned UID 1672."
+  (setq mu4e-change-filenames-when-moving t)
 
-;; define 'b' as the shortcut
-(add-to-list 'mu4e-view-actions
-    '("bview message in browser" . mu4e-action-view-in-browser) t)
+  ;; Send mail with msmtp; these are the same that `gnus' uses.
+  (setq message-send-mail-function 'message-send-mail-with-sendmail
+	sendmail-program "/usr/local/bin/msmtp")
 
-;; Functions such as `match-func' are passed a complete message s-expression
-;; https://www.djcbsoftware.nl/code/mu/mu4e/The-message-s_002dexpression.html
+  ;; By default show the senders email address
+  (setq mu4e-view-show-addresses t)
 
-(setq mu4e-contexts `(
-  ,(make-mu4e-context
-    :name "Primary" ; iCloud
-    :enter-func (lambda () (mu4e-message "→ Primary ctx"))
-    :leave-func (lambda () (mu4e-message "⤺ Primary ctx"))
-    :match-func
-    (lambda (msg)
-      (when msg
-        (string-match-p "^/primary" (mu4e-message-field msg :maildir))))
-    :vars
-    `((user-mail-address . ,(eddie/email-primary))
-      (user-full-name . ,(eddie/full-name))
-      (mu4e-compose-signature . nil)
-      (mu4e-maildir . "~/Maildir/primary")
-      (mu4e-mu-home . "~/.mu/primary")
-      (mu4e-sent-folder . "/Sent Messages")
-      (mu4e-drafts-folder . "/Drafts")
-      (mu4e-trash-folder . "/Deleted Messages")
-      (mu4e-refile-folder . "/Archive")
-      (mu4e-get-mail-command . "mbsync primary")))
-  ,(make-mu4e-context
-    :name "Corp" ; FastMail
-    :enter-func (lambda () (mu4e-message "→ Corp ctx"))
-    :leave-func (lambda () (mu4e-message "⤺ Corp ctx"))
-    :match-func
-    (lambda (msg)
-      (when msg
-        (string-match-p "^/corp" (mu4e-message-field msg :maildir))))
-    :vars
-    `((user-mail-address . ,(eddie/email-corp))
-      (user-full-name . ,(eddie/full-name))
-      (mu4e-maildir . "~/Maildir/corp")
-      (mu4e-mu-home . "~/.mu/corp")
-      (mu4e-compose-signature . nil)
-      (mu4e-sent-folder . "/Sent")
-      (mu4e-drafts-folder . "/Drafts")
-      (mu4e-trash-folder . "/Trash")
-      (mu4e-refile-folder . "/Archive")
-      (mu4e-get-mail-command . "mbsync corp")))
-  ,(make-mu4e-context
-    :name "Blog" ; Gmail
-    :enter-func (lambda () (mu4e-message "→ Blog ctx"))
-    :leave-func (lambda () (mu4e-message "⤺ Blog ctx"))
-    :match-func
-    (lambda (msg)
-      (when msg
-        (string-match-p "^/blog" (mu4e-message-field msg :maildir))))
-    :vars
-    `((user-mail-address . ,(eddie/email-blog))
-      (user-full-name . ,(eddie/full-name))
-      (mu4e-compose-signature . nil)
-      (mu4e-maildir . "~/Maildir/blog")
-      (mu4e-mu-home . "~/.mu/blog")
-      (mu4e-sent-folder . "/[Gmail]/Sent Mail")
-      (mu4e-drafts-folder . "/[Gmail]/Drafts")
-      (mu4e-trash-folder . "/[Gmail]/Trash")
-      (mu4e-refile-folder . "/[Gmail]/All Mail")
-      (mu4e-get-mail-command . "mbsync blog")))))
+  ;; Always prefere plain text
+  (setq mu4e-view-html-plaintext-ratio-heuristic most-positive-fixnum)
 
-;; Gmail may need this:
-;; (setq mu4e-sent-messages-behavior 'delete)
-;; (setq mu4e-sent-messages-behavior (lambda ()
-;;     (if (string= (message-sendmail-envelope-from) (eddie/email-blog))
-;; 	'delete 'sent)))
+					; mu4e-compose-format-flowed ?
 
-;; More Gmail garbage:
-;; (add-hook 'mu4e-mark-execute-pre-hook
-;;     (lambda (mark msg)
-;;       (cond ((member mark '(refile trash)) (mu4e-action-retag-message msg "-\\Inbox"))
-;; 	    ((equal mark 'flag) (mu4e-action-retag-message msg "\\Starred"))
-;; 	    ((equal mark 'unflag) (mu4e-action-retag-message msg "-\\Starred")))))
+  ;; (setq mu4e-view-mode-hook nil)
 
-;; If your main Maildir is not configured as mu4e-maildir you'll get
-;; this error: 'mu4e~start: Args out of range: "", 0, 1'. This is the
-;; fix:
-(setq mu4e-context-policy 'ask-if-none)
+  ;; The following doesn't work because the hook is called before
+  ;; mu4e~view-message is set.
 
-(eval-when-compile (require 'cl)) ;; lexical-let
+  ;; (add-hook 'mu4e-view-mode-hook
+  ;;   (lambda ()
+  ;;     (with-current-buffer mu4e~view-buffer-name
+  ;;       (when (mu4e-message-has-field mu4e~view-message :body-txt)
+  ;; 	(progn
+  ;; 	  (visual-fill-column-mode 1)
+  ;; 	  (visual-line-mode 1))))))
 
-(setq mu4e-confirm-quit nil)
+  (define-key mu4e-view-mode-map (kbd "W")
+    'eddie/toggle-visual-fill-column-mode)
 
-(defun eddie/mu4e-is-current-account (account)
-  (string= (mu4e-context-name (mu4e-context-current)) account))
+  (define-key-after mu4e-view-mode-map
+    [menu-bar headers wrap-column]
+    '("Toggle wrap to fill column" . eddie/toggle-visual-fill-column-mode)
+    'wrap-lines)
 
-(defun eddie/mu4e-switch-account (account)
-  (if (and (mu4e~proc-running-p)
-	   (not (eddie/mu4e-is-current-account account)))
-      (lexical-let ((original-sentinel (process-sentinel mu4e~proc-process))
-		    (original-account account))
-	(set-process-sentinel mu4e~proc-process
-			      (lambda (proc event)
-				(funcall original-sentinel proc event)
-				(mu4e-context-switch t original-account)
-				(mu4e)))
-	(mu4e-quit))
-    (progn
-      (mu4e-context-switch t account)
-      (mu4e))))
+  (defun eddie/mu4e-search-for-sender (msg)
+    "Search for messages sent by the sender of the message at point."
+    (mu4e-headers-search
+     (concat "from:" (cdar (mu4e-message-field msg :from)))))
 
-(defun eddie/mu4e-primary ()
-  "Start mu4e with primary account."
-  (interactive)
-  (eddie/mu4e-switch-account "Primary"))
+  ;; define 'x' as the shortcut
+  (add-to-list 'mu4e-view-actions
+	       '("xsearch for sender" . eddie/mu4e-search-for-sender) t)
 
-(defun eddie/mu4e-corp ()
-  "Start mu4e with corp account."
-  (interactive)
-  (eddie/mu4e-switch-account "Corp"))
+  ;; define 'b' as the shortcut
+  (add-to-list 'mu4e-view-actions
+	       '("bview message in browser" . mu4e-action-view-in-browser) t)
 
-(defun eddie/mu4e-blog ()
-  "Start mu4e with blog account."
-  (interactive)
-  (eddie/mu4e-switch-account "Blog"))
+  ;; Functions such as `match-func' are passed a complete message s-expression
+  ;; https://www.djcbsoftware.nl/code/mu/mu4e/The-message-s_002dexpression.html
 
-(global-set-key (kbd "C-c m p") 'eddie/mu4e-primary)
-(global-set-key (kbd "C-c m c") 'eddie/mu4e-corp)
-(global-set-key (kbd "C-c m b") 'eddie/mu4e-blog)
+  (setq mu4e-contexts
+	`(
+	  ,(make-mu4e-context
+	    :name "Primary" ; iCloud
+	    :enter-func (lambda () (mu4e-message "→ Primary ctx"))
+	    :leave-func (lambda () (mu4e-message "⤺ Primary ctx"))
+	    :match-func
+	    (lambda (msg)
+	      (when msg
+		(string-match-p "^/primary" (mu4e-message-field msg :maildir))))
+	    :vars
+	    `((user-mail-address . ,(eddie/email-primary))
+	      (user-full-name . ,(eddie/full-name))
+	      (mu4e-compose-signature . nil)
+	      (mu4e-maildir . "~/Maildir/primary")
+	      (mu4e-mu-home . "~/.mu/primary")
+	      (mu4e-sent-folder . "/Sent Messages")
+	      (mu4e-drafts-folder . "/Drafts")
+	      (mu4e-trash-folder . "/Deleted Messages")
+	      (mu4e-refile-folder . "/Archive")
+	      (mu4e-get-mail-command . "mbsync primary")))
+	  ,(make-mu4e-context
+	    :name "Corp" ; FastMail
+	    :enter-func (lambda () (mu4e-message "→ Corp ctx"))
+	    :leave-func (lambda () (mu4e-message "⤺ Corp ctx"))
+	    :match-func
+	    (lambda (msg)
+	      (when msg
+		(string-match-p "^/corp" (mu4e-message-field msg :maildir))))
+	    :vars
+	    `((user-mail-address . ,(eddie/email-corp))
+	      (user-full-name . ,(eddie/full-name))
+	      (mu4e-maildir . "~/Maildir/corp")
+	      (mu4e-mu-home . "~/.mu/corp")
+	      (mu4e-compose-signature . nil)
+	      (mu4e-sent-folder . "/Sent")
+	      (mu4e-drafts-folder . "/Drafts")
+	      (mu4e-trash-folder . "/Trash")
+	      (mu4e-refile-folder . "/Archive")
+	      (mu4e-get-mail-command . "mbsync corp")))
+	  ,(make-mu4e-context
+	    :name "Blog" ; Gmail
+	    :enter-func (lambda () (mu4e-message "→ Blog ctx"))
+	    :leave-func (lambda () (mu4e-message "⤺ Blog ctx"))
+	    :match-func
+	    (lambda (msg)
+	      (when msg
+		(string-match-p "^/blog" (mu4e-message-field msg :maildir))))
+	    :vars
+	    `((user-mail-address . ,(eddie/email-blog))
+	      (user-full-name . ,(eddie/full-name))
+	      (mu4e-compose-signature . nil)
+	      (mu4e-maildir . "~/Maildir/blog")
+	      (mu4e-mu-home . "~/.mu/blog")
+	      (mu4e-sent-folder . "/[Gmail]/Sent Mail")
+	      (mu4e-drafts-folder . "/[Gmail]/Drafts")
+	      (mu4e-trash-folder . "/[Gmail]/Trash")
+	      (mu4e-refile-folder . "/[Gmail]/All Mail")
+	      (mu4e-get-mail-command . "mbsync blog")))))
+
+  ;; Gmail may need this:
+  ;; (setq mu4e-sent-messages-behavior 'delete)
+  ;; (setq mu4e-sent-messages-behavior (lambda ()
+  ;;     (if (string= (message-sendmail-envelope-from) (eddie/email-blog))
+  ;; 	'delete 'sent)))
+
+  ;; More Gmail garbage:
+  ;; (add-hook 'mu4e-mark-execute-pre-hook
+  ;;     (lambda (mark msg)
+  ;;       (cond ((member mark '(refile trash)) (mu4e-action-retag-message msg "-\\Inbox"))
+  ;; 	    ((equal mark 'flag) (mu4e-action-retag-message msg "\\Starred"))
+  ;; 	    ((equal mark 'unflag) (mu4e-action-retag-message msg "-\\Starred")))))
+
+  ;; If your main Maildir is not configured as mu4e-maildir you'll get
+  ;; this error: 'mu4e~start: Args out of range: "", 0, 1'. This is the
+  ;; fix:
+  (setq mu4e-context-policy 'ask-if-none)
+
+  (eval-when-compile (require 'cl)) ;; lexical-let
+
+  (setq mu4e-confirm-quit nil)
+
+  (defun eddie/mu4e-is-current-account (account)
+    (string= (mu4e-context-name (mu4e-context-current)) account))
+
+  (defun eddie/mu4e-switch-account (account)
+    (if (and (mu4e~proc-running-p)
+	     (not (eddie/mu4e-is-current-account account)))
+	(lexical-let ((original-sentinel (process-sentinel
+					  mu4e~proc-process))
+		      (original-account account))
+		     (set-process-sentinel
+		      mu4e~proc-process
+		      (lambda (proc event)
+			(funcall original-sentinel proc event)
+			(mu4e-context-switch t original-account)
+			(mu4e)))
+		     (mu4e-quit))
+      (progn
+	(mu4e-context-switch t account)
+	(mu4e))))
+
+  (defun eddie/mu4e-primary ()
+    "Start mu4e with primary account."
+    (interactive)
+    (eddie/mu4e-switch-account "Primary"))
+
+  (defun eddie/mu4e-corp ()
+    "Start mu4e with corp account."
+    (interactive)
+    (eddie/mu4e-switch-account "Corp"))
+
+  (defun eddie/mu4e-blog ()
+    "Start mu4e with blog account."
+    (interactive)
+    (eddie/mu4e-switch-account "Blog"))
+
+  (global-set-key (kbd "C-c m p") 'eddie/mu4e-primary)
+  (global-set-key (kbd "C-c m c") 'eddie/mu4e-corp)
+  (global-set-key (kbd "C-c m b") 'eddie/mu4e-blog))
+
 (put 'upcase-region 'disabled nil)

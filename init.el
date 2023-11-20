@@ -45,6 +45,9 @@
 ;;                       "DejaVu Sans Mono 11"
 ;;                     "DejaVu Sans Mono 15"))
 
+;; ;; eval in *scratch* to get a list of available fonts
+;; (dolist (font (x-list-fonts "*"))
+;;   (insert (format "%s\n" font)))
 (setq eddie/default-frame-style
       `((vertical-scroll-bars)
         (right-fringe . 0)
@@ -233,7 +236,7 @@
 (require 'uniquify nil 'noerror)
 (setq uniquify-buffer-name-style 'forward)
 
-(use-package project-explorer)
+;; (use-package project-explorer)
 
 ;;; ido mode config
 
@@ -450,6 +453,7 @@
 (require 'ob-python)
 (require 'ob-C)
 (require 'ob-shell)
+(require 'ob-sql)
 (org-babel-do-load-languages
  'org-bable-load-languages
  '((emacs-lisp . t)
@@ -671,20 +675,32 @@ cctools, etc. that can not pick either tabs or spaces."
 			    auto-mode-alist))
 
 
+;; (defconst align-this-c-style
+;;   '((c-offsets-alist . ((arglist-cont-nonempty . +)
+;; 			(arglist-close . 0))))
+;;   "C style that performs no 'smart' alignment.")
+;; (c-add-style "Align this." align-this-c-style)
+;; (defun align-this-c-mode ()
+;;   "C mode that turns off all 'smart' alignment. Say 'align this'
+;; like Trinity says 'Dodge this.'"
+;;   (interactive)
+;;   (c-mode)
+;;   (c-set-style "Align this.")
+;;   (setq tab-width 4
+;; 	indent-tabs-mode nil
+;; 	c-basic-offset 4))
+
 (defconst align-this-c-style
-  '((c-offsets-alist . ((arglist-cont-nonempty . +)
+  '((indent-tabs-mode . t)
+    (c-basic-offset  . 8)
+    (c-offsets-alist . ((arglist-cont-nonempty . +)
 			(arglist-close . 0))))
   "C style that performs no 'smart' alignment.")
+
 (c-add-style "Align this." align-this-c-style)
-(defun align-this-c-mode ()
-  "C mode that turns off all 'smart' alignment. Say 'align this'
-like Trinity says 'Dodge this.'"
-  (interactive)
-  (c-mode)
-  (c-set-style "Align this.")
-  (setq tab-width 4
-	indent-tabs-mode nil
-	c-basic-offset 4))
+
+(add-to-list 'c-default-style
+      '(c-mode . "Align this."))
 
 
 ;; JS Modules
@@ -788,29 +804,29 @@ Works with: objc-method-call-cont."
 (use-package web-mode)
 
 ;; Polymode
-(use-package polymode
-  :ensure t
-  :pin melpa-stable)
-(use-package poly-erb
-  :ensure t
-  :after polymode
-  :pin melpa-stable)
-(use-package poly-markdown
-  :ensure t
-  :after polymode
-  :pin melpa-stable)
-(use-package poly-erb
-  :ensure t
-  :after polymode
-  :pin melpa-stable)
+;; (use-package polymode
+;;   :ensure t
+;;   :pin melpa-stable)
+;; (use-package poly-erb
+;;   :ensure t
+;;   :after polymode
+;;   :pin melpa-stable)
+;; (use-package poly-markdown
+;;   :ensure t
+;;   :after polymode
+;;   :pin melpa-stable)
+;; (use-package poly-erb
+;;   :ensure t
+;;   :after polymode
+;;   :pin melpa-stable)
 ;; (use-package poly-org
 ;;   :ensure t
 ;;   :after polymode
 ;;   :pin melpa-stable)
-(use-package poly-ruby
-  :ensure t
-  :after polymode
-  :pin melpa-stable)
+;; (use-package poly-ruby
+;;   :ensure t
+;;   :after polymode
+;;   :pin melpa-stable)
 
 ;; Swift mode config
 (use-package swift-mode)
@@ -1089,17 +1105,20 @@ directory to make multiple eshell windows easier."
 
 (add-hook 'after-init-hook 'global-company-mode)
 
+(defun eddie/clangd-path()
+  "Complete path to clangd."
+  '("/Applications/Xcode12.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clangd"))
+
 (use-package eglot
   :config
   (add-to-list 'eglot-server-programs
-	       '(c-mode .
-			("/Applications/Xcode12.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clangd")))
+	       `((c-mode c-ts-mode) . ,(eddie/clangd-path)))
   (add-to-list 'eglot-stay-out-of "flymake")
   (add-to-list 'eglot-stay-out-of "eldoc"))
 
-(use-package realgud)
-(use-package realgud-lldb)
-(use-package dap-mode)
+;; (use-package realgud)
+;; (use-package realgud-lldb)
+;; (use-package dap-mode)
 
 
 ;; don't underline non-breaking space
@@ -1515,6 +1534,18 @@ of text."
 (add-to-list 'html-tag-face-alist '("h5" . default))
 (add-to-list 'html-tag-face-alist '("h6" . default))
 
+;; web
+(setq mhtml-tag-relative-indent nil
+      sgml-basic-offset 0)
+
+;; web-mode isn't all that...
+;; (require 'web-mode)
+;; (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
+
+;; db
+(setq sql-postgres-program
+      "/usr/local/opt/postgresql@15/bin/psql")
+      ;"/Library/PostgreSQL/15/bin/psql")
 
 ;;; Date helpers
 

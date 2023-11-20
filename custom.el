@@ -9,22 +9,22 @@
  '(nrepl-message-colors
    '("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3"))
  '(package-selected-packages
-   '(dap-mode realgud-lldb realgud eglot ada-mode slime gitignore-templates git-modes with-editor ninja-mode meson-mode poly-ruby poly-markdown poly-erb polymode rainbow-mode fill-column-indicator yasnippet-snippets dotenv-mode foreman-mode dockerfile-mode yaml-mode mood-line mood-line-mode simple-modeline ox-json web-mode yasnippet swift-mode use-package csharp-mode base16-theme company osx-dictionary opencl-mode org ox-hugo visual-fill-column projectile exec-path-from-shell gist htmlize json-mode caddyfile-mode magit emojify neotree editorconfig project-explorer markdown-mode ido-vertical-mode groovy-mode gradle-mode google-c-style go-mode gitignore-mode cmake-mode))
+   '(eglot ada-mode slime gitignore-templates git-modes with-editor ninja-mode meson-mode rainbow-mode fill-column-indicator yasnippet-snippets dotenv-mode foreman-mode dockerfile-mode yaml-mode mood-line mood-line-mode simple-modeline ox-json web-mode yasnippet swift-mode use-package csharp-mode base16-theme company osx-dictionary opencl-mode org ox-hugo visual-fill-column projectile exec-path-from-shell gist htmlize json-mode caddyfile-mode magit emojify neotree editorconfig markdown-mode ido-vertical-mode groovy-mode gradle-mode google-c-style go-mode gitignore-mode cmake-mode))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(safe-local-variable-values
    '((whitespace-line-column . 79)
      (eval ignore-errors
-           (require 'whitespace)
-           (whitespace-mode 1))
+	   (require 'whitespace)
+	   (whitespace-mode 1))
      (whitespace-style face indentation)
      (eval progn
-           (c-set-offset 'case-label '0)
-           (c-set-offset 'innamespace '0)
-           (c-set-offset 'inline-open '0))
+	   (c-set-offset 'case-label '0)
+	   (c-set-offset 'innamespace '0)
+	   (c-set-offset 'inline-open '0))
      (eval electric-ident-local-mode nil)
      (eval when
-           (require 'rainbow-mode nil t)
-           (rainbow-mode 1))))
+	   (require 'rainbow-mode nil t)
+	   (rainbow-mode 1))))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
    '((20 . "#BC8383")

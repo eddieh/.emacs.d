@@ -1,15 +1,59 @@
-# why god, why files
+# -*- mode: gitignore; -*-
+
 *.DS_Store
 
-# Emacs directories
-/auto-save-list
-/elpa
-/eshell
-/url
-
-# generated file
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
 *.elc
-ido.last
-projectile-bookmarks.eld
-
+/auto-save-list
+/tramp
+.\#*
+/url
 /var
+
+# Org-mode
+.org-id-locations
+*_archive
+/org-persist
+
+# flymake-mode
+*_flymake.*
+
+# eshell files
+/eshell/history
+/eshell/lastdir
+
+# elpa packages
+/elpa/
+
+# reftex files
+*.rel
+
+# AUCTeX auto folder
+/auto/
+
+# cask packages
+.cask/
+dist/
+
+# Flycheck
+flycheck_*.el
+
+# server auth directory
+/server/
+
+# projectiles files
+.projectile
+projectile-bookmarks.eld
+projectile.cache
+
+# directory configuration
+.dir-locals.el
+
+# network security
+/network-security.data
+
+# magit
+/transient

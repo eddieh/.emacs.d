@@ -37,11 +37,18 @@
 ;; ;; eval in *scratch* to get a list of available fonts
 ;; (dolist (font (x-list-fonts "*"))
 ;;   (insert (format "%s\n" font)))
+;; (defun e/font ()
+;;   "Logic for selecting font and size."
+;;   (if (memq system-type '(darwin))
+;;       "DejaVuSansM Nerd Font Mono-14"
+;;     "DejaVuSansM Nerd Font Mono-10"))
 (defun e/font ()
   "Logic for selecting font and size."
-  (if (memq system-type '(darwin))
-      "DejaVuSansM Nerd Font Mono-14"
-    "DejaVuSansM Nerd Font Mono-10"))
+  (cond ((memq system-type '(darwin))
+	 "DejaVuSansM Nerd Font Mono-14")
+	((memq system-type '(windows-nt))
+	 "DejaVuSansM Nerd Font Mono-13")
+	(t "DejaVuSansM Nerd Font Mono-10")))
 
 (defun e/frame-height ()
   "Logic for setting the frame height."
@@ -79,6 +86,9 @@
 (add-to-list
  'package-archives
  '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(add-to-list
+ 'package-archives
+ '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list
  'package-archives
  '("elpa" . "https://tromey.com/elpa/"))
@@ -127,6 +137,21 @@
     (setq ispell-program-name "aspell")
   (setq ispell-program-name "hunspell"
         ispell-really-hunspell t))
+
+;; Hunspell installed on Windows with
+;;
+;;   winget install --id=FSFhu.Hunspell  -e
+;;
+
+(if (memq system-type '(windows-nt))
+    (progn
+      (setq ispell-hunspell-dict-paths-alist
+	    `(("en_US" ,(expand-file-name "~/Dictionary/en_US.aff")))) ; "C:/path/to/en_US.aff"
+      (setq ispell-local-dictionary "en_US")
+      (setq ispell-local-dictionary-alist
+	    '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
+      (setenv "LANG" "en_US.UTF-8")
+      (setenv "DICPATH" (expand-file-name "~/Dictionary"))))
 
 (setq show-paren-style 'parenthesis)
 (show-paren-mode t)

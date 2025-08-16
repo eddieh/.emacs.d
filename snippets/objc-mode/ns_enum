@@ -1,0 +1,7 @@
+# key: nsenum
+# name: NS_ENUM
+# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 'nil))
+# --
+typedef NS_ENUM(${1:NSUInteger}, ${2}) {
+    $2$0 = 0,
+};

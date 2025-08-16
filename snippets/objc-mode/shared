@@ -1,0 +1,12 @@
+# key: shared
+# name: shared singleton
+# --
++ (instancetype)shared${1:Instance} {
+    static ${2} *inst = nil;
+    static dispatch_once_t token;
+    dispatch_once(&token, ^{
+        inst = self.new;
+    });
+    return inst;
+}
+$0

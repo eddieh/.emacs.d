@@ -4,8 +4,8 @@
        (re-search-forward "@\\<interface\\>"
 			  magic-mode-regexp-match-limit t)))
 
-(add-to-list 'magic-mode-alist
-             '(e/objc-headerp . not-stupid-objc-mode))
+;; (add-to-list 'magic-mode-alist
+;;              '(e/objc-headerp . not-stupid-objc-mode))
 ;; https://www.gnu.org/software/emacs/manual/html_mono/ccmode.html#Objective_002dC-Method-Symbols
 
 (defun e/c-lineup-ObjC-method-call-not-stupid (langelem)
@@ -82,6 +82,13 @@ Works with: objc-method-call-cont."
 
 ;; Obj-C, Objective-C, objc, Cocoa
 (add-to-list 'auto-mode-alist '("\\.m$" . not-stupid-objc-mode))
+
+(eval-and-compile
+  (unless (or (stringp c-default-style)
+              (assoc 'objc-mode c-default-style))
+    (setq c-default-style
+          (cons '(objc-mode . "!Stupid Objective-C") c-default-style))))
+
 
 (defun e/objc-headerp ()
   (and buffer-file-name

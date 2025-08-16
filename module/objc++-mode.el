@@ -222,7 +222,7 @@
 			(inline-open           . 0)))
     ;; indent line when pressing tab, instead of a plain tab character
     (c-tab-always-indent . t)
-    (indent-tabs-mode . t)
+    (indent-tabs-mode . nil)
     (tab-width . 4))
   "ObjC++ Style")
 
@@ -280,6 +280,43 @@ Key bindings:
 ;; 			  magic-mode-regexp-match-limit t)))
 ;; (add-to-list 'magic-mode-alist '(objc++-headerp . objc++-mode))
 
+;; (defun objc++-guess-basic-syntax ()
+;;   "Return the syntactic context of the current line."
+;;   (save-excursion
+;;     (beginning-of-line)
+;;     (c-save-buffer-state
+;; 	(save-match-data
+;; 	  (message c-syntactic-context)))))
+;; (advice-add 'c-guess-basic-syntax :after #'objc++-guess-basic-syntax)
+
+;; (advice-mapc (lambda (fn prop)
+;; 	       (progn
+;; 		 (message "%s" fn)
+;; 		 (message "%s" prop))) 'c-guess-basic-syntax)
+;; (advice-remove 'c-guess-basic-syntax #'objc++-guess-basic-syntax)
+
+(defun c-indent-objc++-hook ()
+  (interactive)
+  (if (c-major-mode-is 'objc++-mode)
+      (let ((context c-syntactic-context)
+	    (col (current-indentation))
+	    (pos (point)))
+	(message "context %s" context)
+	(message "col %s" col)
+	(message "pos %s" pos)
+	(when (assq 'func-decl-cont context)
+	  (save-excursion
+	    (beginning-of-line)
+	    (c-backward-syntactic-ws)
+	    (let* ((langelms (c-guess-basic-syntax))
+		   (target-col (c-get-syntactic-indentation langelms)))
+	      (message "langelms %s" langelms)
+	      (message "target-col %s" target-col)
+	      (goto-char pos)
+	      (indent-line-to target-col)))))
+    (message "not objc++-mode")))
+
+(add-hook 'c-special-indent-hook 'c-indent-objc++-hook)
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.mm\\'" . objc++-mode))

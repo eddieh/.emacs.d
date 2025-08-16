@@ -49,7 +49,7 @@
 			(case-label            . 0)
 			(member-init-intro     . +)
 			(topmost-intro         . 0)
-			(arglist-cont-nonempty . +)
+			(arglist-cont-nonempty . 0)
 			(block-open            . 0)
 			(brace-list-open       . +)
 			(brace-list-intro      . +)
@@ -63,7 +63,7 @@
 			(inline-open           . 0)))
     ;; indent line when pressing tab, instead of a plain tab character
     (c-tab-always-indent . t)
-    (indent-tabs-mode . t)
+    (indent-tabs-mode . nil)
     (tab-width . 4))
   "Default C++ Style")
 
@@ -73,6 +73,21 @@ Meant to be added to `c-mode-common-hook'."
    (interactive)
    (c-add-style "default-c++" default-c++-style t))
 
+(c-add-style "default-c++" default-c++-style)
+(c-add-style "default-c++ [t4]."
+	     '("default-c++"
+	       (indent-tabs-mode . t)
+	       (c-basic-offset . 4)))
+(c-add-style "default-c++ [t8]."
+	     '("default-c++"
+	       (indent-tabs-mode . t)
+	       (c-basic-offset . 8)))
+
+(add-to-list 'c-default-style '(c++-mode . "default-c++"))
 
 ;; IOKit interface generator (.iig) header file
 (add-to-list 'auto-mode-alist '("\\.iig\\'" . c++-mode))
+
+(add-hook 'c++-mode-hook (lambda ()
+			   (setq comment-start "/* "
+                                 comment-end   " */")))

@@ -17,31 +17,43 @@
 			(label . 0))))
   "C style that performs no 'smart' alignment.")
 
+(defun align-this-c-style-mode ()
+  "Set the current buffer's c-style to 'Align this.' Style.
+Meant to be added to `c-mode-common-hook'."
+  (interactive)
+  (c-add-style "Align this." align-this-c-style t))
+
 (c-add-style "Align this." align-this-c-style)
-(c-add-style "Align this [t4]." '("Align this."
-				  (indent-tabs-mode . t)
-				  (c-basic-offset . 4)))
-(c-add-style "Align this [t8]." '("Align this."
-				  (indent-tabs-mode . t)
-				  (c-basic-offset . 8)))
+(c-add-style "Align this [t4]."
+	     '("Align this."
+	       (indent-tabs-mode . t)
+	       (c-basic-offset . 4)))
+(c-add-style "Align this [t8]."
+	     '("Align this."
+	       (indent-tabs-mode . t)
+	       (c-basic-offset . 8)))
 
-(add-to-list 'c-default-style
-	     '(c-mode . "Align this."))
+(add-to-list 'c-default-style '(c-mode . "Align this."))
 
+
+;;(setq c-mode-hook nil)
 (add-hook 'c-mode-hook
 	  (lambda ()
 	    (let ((path (buffer-file-name)))
-	      (cond
-	       ((string-match "/gxemul.*/.*\\.[ch|cpp]*$" path)
-		(netbsd-knf-c-mode-hook))
-	       (t
-		(c-set-style "Align this."))))))
+	      (if (stringp path)
+		  (cond
+		   ((string-match "/gxemul.*/.*\\.[ch|cpp]*$" path)
+		    (netbsd-knf-c-mode-hook))
+		   (t
+		    (c-set-style "Align this.")))))))
 
+;;(setq c-mode-common-hooke nil)
 (add-hook 'c-mode-common-hook
 	  (lambda ()
 	    (let ((path (buffer-file-name)))
-	      (cond
-	       ((string-match ".*VirtualController.*/.*\\.[c|h|cpp|hpp|iig]*$" path)
-		(default-c++-style-mode))
-	       ((string-match ".*irrlicht.*/.*\\.[c|h|cpp]*$" path)
-		(default-c++-style-mode))))))
+	      (if (stringp path)
+		  (cond
+		   ((string-match ".*VirtualController.*/.*\\.[c|h|cpp|hpp|iig]*$" path)
+		    (default-c++-style-mode))
+		   ((string-match ".*irrlicht.*/.*\\.[c|h|cpp]*$" path)
+		    (default-c++-style-mode)))))))

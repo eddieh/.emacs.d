@@ -23,6 +23,11 @@
                                ;; look for 'file' in dir:
                                ;; (e/config-path "module"))))
 
+(setenv "PATH" (concat
+		(getenv "HOME") "/.local/share/mise/shims" ":" (getenv "PATH")))
+(add-to-list 'exec-path (concat
+			 (getenv "HOME") "/.local/share/mise/shims"))
+
 (setq byte-compile-warnings '(cl-functions))
 (setq inhibit-splash-screen t)
 
@@ -92,6 +97,10 @@
 (add-to-list
  'package-archives
  '("elpa" . "https://tromey.com/elpa/"))
+(setq package-archive-priorities
+      '(("melpa-stable" . 10)
+	("melpa" . 5)
+	("elpa" . 0)))
 (package-initialize)
 
 (unless (package-installed-p 'use-package)
@@ -99,8 +108,15 @@
   (package-install 'use-package))
 
 (require 'use-package)
+(require 'use-package-ensure)
 (setq use-package-verbose t
       use-package-always-ensure t)
+
+(use-package quelpa :ensure)
+(use-package quelpa-use-package
+  :demand
+  :config
+  (quelpa-use-package-activate-advice))
 
 (setq zenburn-height-minus-1 1.0
       zenburn-height-plus-1 1.0
@@ -170,10 +186,17 @@
 (setq make-backup-files nil
       require-final-newline t)
 
+(global-auto-revert-mode t)
+
 (setq tab-width 4)
 (setq indent-tabs-mode nil)
 
+;; make the cursor as wide as the character
 (setq x-stretch-cursor t)
+
+;; blink forever
+(setq blink-cursor-blinks -1)
+
 
 ;; load server specific init files
 (if (string= (daemonp) "browser")
@@ -208,15 +231,16 @@
 (e/load-init-module "module/make.el")
 (e/load-init-module "module/netbsd-knf-style.el")
 (e/load-init-module "module/c.el")
-(e/load-init-module "module/cpp.el")
+(e/load-init-module "module/c++.el")
 (e/load-init-module "module/objc.el")
-(e/load-init-module "module/objc++-mode.el")
+;; (e/load-init-module "module/objc++-mode.el")
 (e/load-init-module "module/packages.el")
 (e/load-init-module "module/projectile.el")
 (e/load-init-module "module/magit.el")
 (e/load-init-module "module/eglot.el")
 (e/load-init-module "module/speak.el")
 (e/load-init-module "module/kbd-macros.el")
+(e/load-init-module "module/org.el")
 
 ;; (eval-after-load 'egot
 ;;   (progn
@@ -237,6 +261,7 @@
 (global-unset-key (kbd "C-<wheel-down>"))
 (global-unset-key (kbd "C-z"))
 (global-unset-key (kbd "C-x C-z"))
+(global-unset-key (kbd "s-m"))
 
 (delete-selection-mode 1)
 
@@ -250,3 +275,18 @@
   (interactive)
   (let ((fill-column (point-max)))
     (fill-region (region-beginning) (region-end) nil)))
+
+(defun e/open-lisp-dired (subd)
+  (interactive (list (read-directory-name "Emacs.app/lisp/" lisp-directory)))
+  (dired subd))
+(put 'narrow-to-region 'disabled nil)
+
+;; Emacs installed with `brew' does not have the `x-bitmap-file-path'
+;; set to the correct path
+(add-to-list 'x-bitmap-file-path "/usr/X11/include/X11/bitmaps/")
+
+;; Emacs installed with `brew' does not also install Emacs C source
+;; files and therefore this variable is nil
+;; (or find-function-C-source-directory
+;;     (setq find-function-C-source-directory
+;; 	  "<path-to-Emacs-C-source-dir>"))

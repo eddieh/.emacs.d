@@ -57,3 +57,7 @@ projectile.cache
 
 # magit
 /transient
+
+.cache
+devdocs
+quelpa
